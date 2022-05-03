@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import AbstractController from "../controllers/AbstractController";
-import db from "../models"
+import db from "../models";
 
 class Server {
   private app: express.Application;
@@ -26,7 +26,8 @@ class Server {
     this.app.get("/", (_: any, res: Response) => {
       res.status(200).send({
         message: "The backend is working",
-        documentation: "https://github.com/",
+        documentation:
+          "https://github.com/AmazonConnect-TECCEM-502/amazonconnect-backend/wiki",
       });
     });
 
@@ -38,13 +39,13 @@ class Server {
 
   // Agregar Middleware
   private loadMiddlewares(middlewares: any[]): void {
-    middlewares.forEach((middleware:any) => {
-      this.app.use(middleware)
-    })
+    middlewares.forEach((middleware: any) => {
+      this.app.use(middleware);
+    });
   }
 
   // Agregar conexion a bd
-  private async databases(){
+  private async databases() {
     await db.sequelize.sync();
   }
 
