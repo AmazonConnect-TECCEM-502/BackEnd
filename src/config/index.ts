@@ -15,3 +15,11 @@ export const DB_PASSWORD = process.env.DB_PASSWORD
 export const DB_HOST = process.env.DB_HOST
   ? process.env.DB_HOST
   : "aws-capstone-gp2.cjkp3k2seo8m.us-east-1.rds.amazonaws.com";
+  export const AWS_REGION = process.env.AWS_REGION 
+  ? process.env.AWS_REGION : "us-east-1";
+  export const AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY 
+  ? process.env.AWS_ACCESS_KEY : "";
+  export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY 
+  ? process.env.AWS_SECRET_ACCESS_KEY : "";
+  export const PREFIX_TABLE = NODE_ENV === "production" 
+  ? "" : "-DEV";
