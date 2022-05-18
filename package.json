@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/AmazonConnect-TECCEM-502/amazonconnect-backend#readme",
   "dependencies": {
+    "@types/async": "^3.2.13",
+    "aws-sdk": "^2.1137.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "dynamodb": "^1.3.0",
