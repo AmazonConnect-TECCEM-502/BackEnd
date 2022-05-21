@@ -1,7 +1,11 @@
+/* 
+Tabla call tiene llaves foraneas 
+*/
+
 import { Model } from "sequelize";
 
 interface ModelAttributes {
-  id: number;
+  call_id: number;
   duration: number;
   video_url: string;
   transcription: string;
@@ -10,32 +14,36 @@ interface ModelAttributes {
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Call extends Model<ModelAttributes> implements ModelAttributes {
-    id!: number;
+    call_id!: number;
     duration!: number;
     video_url!: string;
     transcription!: string;
     rating!: number;
 
     static associate(models: any) {
-      //Call.belongsTo(models.Client);
-      //Call.belongsTo(models.Agent);
+      
+      Call.belongsToMany(models.Problem, { through: 'Call-Problem' })
+      
+      Call.belongsTo(models.Client);
+      Call.belongsTo(models.Agent);
+    
     }
   }
 
   Call.init(
     {
-      id: {
+      call_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
       },
       duration: {
-        type: DataTypes.STRING,
+        type: DataTypes.FLOAT,
         allowNull: false,
       },
       video_url: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(255),
         allowNull: false,
         unique: true,
       },
