@@ -17,7 +17,6 @@ module.exports = (sequelize: any, DataTypes: any) => {
 
     static associate(models: any) {
       Product_category.belongsToMany(models.Product, { through: 'Category-Product' })
-      Product_category.hasMany(models.Orders)
     
     }
   }

@@ -12,7 +12,6 @@ interface ModelAttributes {
   //Approved_by -- FK
   approved: number; // ES DE TIPO BIT ESTA BIEN ESO ??
   approved_date: Date; 
-  created: Date;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
@@ -24,7 +23,6 @@ module.exports = (sequelize: any, DataTypes: any) => {
     //Approved_by -- FK
     approved!: number; // ES DE TIPO BIT ESTA BIEN ESO ??
     approved_date!: Date; 
-    created!: Date;
 
     static associate(models: any) {
       Solution.belongsTo(models.Agent)
@@ -51,10 +49,6 @@ module.exports = (sequelize: any, DataTypes: any) => {
         defaultValue: 0
       },
       approved_date: {
-        type: DataTypes.DATE,
-        allowNull: false
-      },
-      created: {
         type: DataTypes.DATE,
         allowNull: false
       },

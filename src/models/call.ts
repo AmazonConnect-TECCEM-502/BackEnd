@@ -39,11 +39,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         autoIncrement: true,
       },
       duration: {
-        type: DataTypes.STRING,
+        type: DataTypes.FLOAT,
         allowNull: false,
       },
       video_url: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(255),
         allowNull: false,
         unique: true,
       },

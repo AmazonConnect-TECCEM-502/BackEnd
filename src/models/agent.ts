@@ -33,10 +33,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
   Agent.init(
     {
       agent_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true,
-        autoIncrement: true,
+        primaryKey: true
       },
       fname: {
         type: DataTypes.STRING,
@@ -48,6 +47,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       email: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: true,
       },
     },
