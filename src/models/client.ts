@@ -10,6 +10,8 @@ interface ModelAttributes {
   lname: string;
   email: string;
   phone: number;
+  question:string;
+  response: string;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
@@ -19,6 +21,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
     lname!: string;
     email!: string;
     phone!: number;
+    question!:string;
+    response!: string;
 
     static associate(models: any) {
       Client.hasMany(models.Call)
@@ -51,6 +55,14 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       phone: {
         type: DataTypes.STRING,
+        allowNull: false
+      },
+      question: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      response: {
+        type: DataTypes.TEXT,
         allowNull: false
       },
     },
