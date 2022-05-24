@@ -5,19 +5,24 @@ import { Model } from "sequelize";
 
 interface ModelAttributes {
   category_id: number;
-  category_name: string; 
-  category_description : string;
+  category_name: string;
+  category_description: string;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
-  class Problem_category extends Model<ModelAttributes> implements ModelAttributes {
+  class Problem_category
+    extends Model<ModelAttributes>
+    implements ModelAttributes
+  {
     category_id!: number;
-    category_name!: string; 
+    category_name!: string;
     category_description!: string;
 
     static associate(models: any) {
-      Problem_category.belongsToMany(models.Problem, { through: 'Category-Problem' })
-    
+      Problem_category.belongsToMany(models.Problem, {
+        through: "Category-Problem",
+        foreignKey: "category_id",
+      });
     }
   }
 
@@ -31,10 +36,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       category_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       category_description: {
-        type: DataTypes.TEXT, //Preguntar lo de allow nulls
+        type: DataTypes.TEXT,
       },
     },
     {

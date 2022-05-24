@@ -18,7 +18,7 @@ if (env === "development") {
       dialect: "mysql",
       host: config.development.host,
       define: {
-        timestamps: true,
+        timestamps: false,
         freezeTableName: true,
       },
     }

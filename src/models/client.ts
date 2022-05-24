@@ -4,27 +4,27 @@ Tabla cliente No llaves foraneas
 
 import { Model } from "sequelize";
 
+const fkName = "client_id";
+
 interface ModelAttributes {
   client_id: number;
-  fname: string;  
-  lname: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  phone: number;
+  phone: string;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Client extends Model<ModelAttributes> implements ModelAttributes {
     client_id!: number;
-    fname!: string; 
-    lname!: string;
+    first_name!: string;
+    last_name!: string;
     email!: string;
-    phone!: number;
+    phone!: string;
 
     static associate(models: any) {
-      Client.hasMany(models.Call)
-      Client.hasMany(models.Orders)
-
-    
+      Client.hasMany(models.Call, { foreignKey: fkName });
+      Client.hasMany(models.Order, { foreignKey: fkName });
     }
   }
 
@@ -34,24 +34,24 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
-      fname: {
+      first_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
-      lname: {
+      last_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
     },
     {

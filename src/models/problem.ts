@@ -4,6 +4,8 @@ Tabla Problem tiene llaves foraneas
 
 import { Model } from "sequelize";
 
+const fkName = "problem_id";
+
 interface ModelAttributes {
   problem_id: number;
   problem_description: string;
@@ -15,15 +17,20 @@ module.exports = (sequelize: any, DataTypes: any) => {
     problem_id!: number;
     problem_description!: string;
     //submitted_by -- FK
-    
-    static associate(models: any) {
-      Problem.belongsToMany(models.Call, { through: 'Call-Problem' })
-      Problem.belongsToMany(models.Problem_category, { through: 'Category-Problem' })
 
-      Problem.hasMany(models.Solution)
-      
-      Problem.belongsTo(models.Agent)
-    
+    static associate(models: any) {
+      Problem.belongsToMany(models.Call, {
+        through: "Call-Problem",
+        foreignKey: fkName,
+      });
+      Problem.belongsToMany(models.Problem_category, {
+        through: "Category-Problem",
+        foreignKey: fkName,
+      });
+
+      Problem.hasMany(models.Solution, { foreignKey: fkName });
+
+      Problem.belongsTo(models.User, { foreignKey: "submitted_by" });
     }
   }
 
@@ -37,12 +44,12 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       problem_description: {
         type: DataTypes.TEXT,
-        allowNull: false,
       },
     },
     {
       sequelize,
       modelName: "Problem",
+      createdAt: true,
     }
   );
   return Problem;
