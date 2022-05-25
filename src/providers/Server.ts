@@ -46,7 +46,7 @@ class Server {
 
   // Agregar conexion a bd
   private async databases() {
-    await db.sequelize.sync();
+    await db.sequelize.sync({ force: true });
     // console.log("Termino ? :S")
   }
 
