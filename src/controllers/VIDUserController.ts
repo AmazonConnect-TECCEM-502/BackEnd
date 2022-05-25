@@ -21,7 +21,7 @@ class VIDUserController extends AbstractController {
     this.router.post('/sendAuthRes',this.postSendAuthRes.bind(this));
     this.router.get('/getAuthRes',this.getAuthRes.bind(this));
     this.router.get("/getUserData", this.getUserData.bind(this));
-    this.router.get('/sendClientData',this.postSendClientData.bind(this));
+    this.router.post('/sendClientData',this.postSendClientData.bind(this));
     //this.router.post("/uploadCall", this.postUploadVideo.bind(this));
   }
   //Sobrante
@@ -73,7 +73,7 @@ class VIDUserController extends AbstractController {
     private async postSendClientData(req: Request, res: Response) {
         try {
                 //await db["User"].create(req.body);
-                await db["Client"].create({fname:req.body.fname, lname:req.body.lname, email:req.body.email ,phone: req.body.phone})
+                await db["Client"].create({first_name:req.body.first_name, last_name:req.body.last_name, email:req.body.email ,phone: req.body.phone})
                 console.log("Registo exitoso");
                 res.status(200).send("Registro exitoso");
         } catch (error: any) {
