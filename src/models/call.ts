@@ -63,7 +63,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
     {
       sequelize,
       modelName: "Call",
-      createdAt: true,
+      timestamps: true,
+      updatedAt: false,
+      createdAt: "created",
     }
   );
   return Call;

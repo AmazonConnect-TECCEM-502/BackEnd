@@ -40,6 +40,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
     {
       sequelize,
       modelName: "Order",
+      timestamps: true,
+      updatedAt: false,
       createdAt: "purchased_date",
     }
   );
