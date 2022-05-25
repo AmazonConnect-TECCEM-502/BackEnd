@@ -4,11 +4,13 @@ Tabla call tiene llaves foraneas
 
 import { Model } from "sequelize";
 
+const fkName = "call_id";
+
 interface ModelAttributes {
   call_id: number;
   duration: number;
   video_url: string;
-  transcription: string;
+  transcription_url: string;
   rating: number;
 }
 
@@ -17,16 +19,17 @@ module.exports = (sequelize: any, DataTypes: any) => {
     call_id!: number;
     duration!: number;
     video_url!: string;
-    transcription!: string;
+    transcription_url!: string;
     rating!: number;
 
     static associate(models: any) {
-      
-      Call.belongsToMany(models.Problem, { through: 'Call-Problem' })
-      
-      Call.belongsTo(models.Client);
-      Call.belongsTo(models.Agent);
-    
+      Call.belongsToMany(models.Problem, {
+        through: "Call-Problem",
+        foreignKey: fkName,
+      });
+
+      Call.belongsTo(models.Client, { foreignKey: "client_id" });
+      Call.belongsTo(models.User, { foreignKey: "agent_id" });
     }
   }
 
@@ -41,15 +44,15 @@ module.exports = (sequelize: any, DataTypes: any) => {
       duration: {
         type: DataTypes.FLOAT,
         allowNull: false,
+        validate: {
+          min: 1,
+        },
       },
       video_url: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-        unique: true,
-      },
-      transcription: {
         type: DataTypes.TEXT,
-        allowNull: true,
+      },
+      transcription_url: {
+        type: DataTypes.TEXT,
       },
       rating: {
         type: DataTypes.INTEGER,
@@ -60,6 +63,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
     {
       sequelize,
       modelName: "Call",
+      timestamps: true,
+      updatedAt: false,
+      createdAt: "created",
     }
   );
   return Call;

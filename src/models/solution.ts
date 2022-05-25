@@ -6,29 +6,26 @@ import { Model } from "sequelize";
 
 interface ModelAttributes {
   solution_id: number;
-  solution_description: string; 
+  solution_description: string;
   //Submitted_id -- FK
   //Problem_id -- FK
   //Approved_by -- FK
-  approved: number; // ES DE TIPO BIT ESTA BIEN ESO ??
-  approved_date: Date; 
+  approved_date: Date;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Solution extends Model<ModelAttributes> implements ModelAttributes {
     solution_id!: number;
-    solution_description!: string; 
+    solution_description!: string;
     //Submitted_id -- FK
     //Problem_id -- FK
     //Approved_by -- FK
-    approved!: number; // ES DE TIPO BIT ESTA BIEN ESO ??
-    approved_date!: Date; 
+    approved_date!: Date;
 
     static associate(models: any) {
-      Solution.belongsTo(models.Agent)
-      Solution.belongsTo(models.Manager)
-      Solution.belongsTo(models.Problem)
-    
+      Solution.belongsTo(models.User, { foreignKey: "submitted_id" });
+      Solution.belongsTo(models.User, { foreignKey: "approved_by" });
+      Solution.belongsTo(models.Problem, { foreignKey: "problem_id" });
     }
   }
 
@@ -42,20 +39,18 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       solution_description: {
         type: DataTypes.TEXT,
-        allowNull: false
-      },
-      approved: {
-        type: DataTypes.BOOLEAN, // PREGUNTAR 
-        defaultValue: 0
+        allowNull: false,
       },
       approved_date: {
         type: DataTypes.DATE,
-        allowNull: false
       },
     },
     {
       sequelize,
       modelName: "Solution",
+      timestamps: true,
+      updatedAt: false,
+      createdAt: "created",
     }
   );
   return Solution;

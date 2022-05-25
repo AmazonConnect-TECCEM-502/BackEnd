@@ -46,7 +46,7 @@ class CallController extends AbstractController {
         if (err) {
           res.status(500).json({ error: err.message });
         } else {
-          res.status(200).json({ data: data });
+          res.status(200).send(data.Contents);
         }
       });
     } catch (err: any) {
