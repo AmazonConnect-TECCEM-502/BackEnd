@@ -32,8 +32,8 @@ class VIDUserController extends AbstractController {
 
             console.log("Resultado de autenticación: ");
             console.log(req.body.authenticationType);
-            //this.phoneNumber = req.body.phone
-            //this.phoneNumber = req.body.authenticationType
+            this.phoneNumber = req.body.phone
+            this.authenticationType = req.body.authenticationType
             res.status(200).send("Mensaje recibido");
         } catch (error: any) {
             console.log(error);
