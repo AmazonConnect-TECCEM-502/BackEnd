@@ -5,7 +5,7 @@ import db from "../models";
 
 class VIDUserController extends AbstractController {
   private static instance: VIDUserController;
-  private phoneNumber: number = -1;
+  private phoneNumber: string = "";
   private authenticationType = "Not yet"; // si no no registrado
   
   public static getInstance(): AbstractController {
@@ -21,6 +21,7 @@ class VIDUserController extends AbstractController {
     this.router.get('/getAuthRes',this.getAuthRes.bind(this));
     this.router.get("/getUserData", this.getUserData.bind(this));
     this.router.get('/sendClientData',this.postSendClientData.bind(this));
+    this.router.get('/reset',this.reset.bind(this));
     //this.router.post("/uploadCall", this.postUploadVideo.bind(this));
   }
   private async postSendAuthRes(req: Request, res: Response) {
@@ -30,8 +31,8 @@ class VIDUserController extends AbstractController {
 
             console.log("Resultado de autenticación: ");
             console.log(req.body.authenticationType);
-            //this.phoneNumber = req.body.phone
-            //this.phoneNumber = req.body.authenticationType
+            this.phoneNumber = req.body.phoneNumber
+            this.phoneNumber = req.body.authenticationType
             res.status(200).send("Mensaje recibido");
         } catch (error: any) {
             console.log(error);
@@ -74,6 +75,17 @@ class VIDUserController extends AbstractController {
                 console.log("Registo exitoso");
                 res.status(200).send("Registro exitoso");
         } catch (error: any) {
+            console.log(error);
+            res.status(500).send("Error fatal");
+        }
+    }
+
+    private async reset(req: Request, res: Response) {
+        try {
+            this.authenticationType = "Not yet";
+            this.phoneNumber = "";
+            res.status(200).send("Orden de resetear recibida");
+        } catch(error: any) {
             console.log(error);
             res.status(500).send("Error fatal");
         }
