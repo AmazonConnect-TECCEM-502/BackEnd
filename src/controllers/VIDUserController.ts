@@ -44,7 +44,7 @@ class VIDUserController extends AbstractController {
     private async getUserData(req: Request, res: Response) {
         try{
             
-            let userData = await db["Client"].findOne({where: {phone: req.body.phone}})
+            let userData = await db["Client"].findOne({where: {phone: this.phoneNumber}})
             console.log("Datos de usuario:", userData);
             res.status(200).send(userData);
         }catch(error){
