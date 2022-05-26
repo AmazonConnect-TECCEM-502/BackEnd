@@ -6,7 +6,7 @@ import db from "../models";
 class VIDUserController extends AbstractController {
   private static instance: VIDUserController;
   
-  private phoneNumber: number = -1;
+  private phoneNumber: string = "";
   private authenticationType = "Not yet"; // si no no registrado
   
   public static getInstance(): AbstractController {
