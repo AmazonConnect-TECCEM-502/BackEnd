@@ -17,6 +17,7 @@ class UserController extends AbstractController {
   protected initRoutes(): void {
     this.router.get("/readUser", this.getReadUser.bind(this));
     this.router.get("/readUsers", this.getReadUsers.bind(this));
+    this.router.get("/readAgents", this.getReadAgents.bind(this));
 
     // Agregar más rutas
   }
@@ -33,7 +34,9 @@ class UserController extends AbstractController {
     }
   }
 
-  private async getReadUsers(req: Request, res: Response) {
+  private async getReadUsers(req: Request, res: Response) {}
+
+  private async getReadAgents(req: Request, res: Response) {
     try {
       let agent = await db.sequelize.query("SELECT first_name, last_name FROM User WHERE user_type like 'agent%'", {
         model: db["User"],
