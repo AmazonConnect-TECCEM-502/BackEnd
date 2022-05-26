@@ -8,6 +8,7 @@ import UserController from "./controllers/UserController";
 import CallController from "./controllers/CallController";
 import VIDUserController from "./controllers/VIDUserController";
 import ProblemCategoryController from "./controllers/ProblemCategoryController";
+import SalesContoller from "./controllers/SalesController";
 
 const app = new Server({
   port: PORT,
@@ -15,8 +16,10 @@ const app = new Server({
   controllers: [UserController.getInstance(), 
                 CallController.getInstance(), 
                 VIDUserController.getInstance(),
-                ProblemCategoryController.getInstance()
+                ProblemCategoryController.getInstance(),
+                SalesContoller.getInstance()
               ],
+
   env: NODE_ENV,
 });
 

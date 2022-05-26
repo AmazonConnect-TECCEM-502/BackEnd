@@ -5,7 +5,8 @@ import db from "../models";
 
 class VIDUserController extends AbstractController {
   private static instance: VIDUserController;
-  private phoneNumber: number = -1;
+  
+  private phoneNumber: string = "";
   private authenticationType = "Not yet"; // si no no registrado
   
   public static getInstance(): AbstractController {
@@ -20,9 +21,10 @@ class VIDUserController extends AbstractController {
     this.router.post('/sendAuthRes',this.postSendAuthRes.bind(this));
     this.router.get('/getAuthRes',this.getAuthRes.bind(this));
     this.router.get("/getUserData", this.getUserData.bind(this));
-    this.router.get('/sendClientData',this.postSendClientData.bind(this));
+    this.router.post('/sendClientData',this.postSendClientData.bind(this));
     //this.router.post("/uploadCall", this.postUploadVideo.bind(this));
   }
+  //Sobrante
   private async postSendAuthRes(req: Request, res: Response) {
         try {
             console.log("El teléfono del usuario es: ");
@@ -30,8 +32,8 @@ class VIDUserController extends AbstractController {
 
             console.log("Resultado de autenticación: ");
             console.log(req.body.authenticationType);
-            //this.phoneNumber = req.body.phone
-            //this.phoneNumber = req.body.authenticationType
+            this.phoneNumber = req.body.phone
+            this.authenticationType = req.body.authenticationType
             res.status(200).send("Mensaje recibido");
         } catch (error: any) {
             console.log(error);
@@ -42,7 +44,7 @@ class VIDUserController extends AbstractController {
     private async getUserData(req: Request, res: Response) {
         try{
             
-            let userData = await db["Client"].findOne({where: {phone: this.phoneNumber.toString()}})
+            let userData = await db["Client"].findOne({where: {phone: this.phoneNumber}})
             console.log("Datos de usuario:", userData);
             res.status(200).send(userData);
         }catch(error){
@@ -53,13 +55,14 @@ class VIDUserController extends AbstractController {
                 }
             }
         }
-
+    
+        //Ponerlo o asociarlo a la clase no es correcto (No guardar los datos realmente)
     private async getAuthRes(req: Request, res: Response) {
         try {
             console.log("Enviando autenticación al front")
             res.status(200).send({
-                "phoneNumber": this.phoneNumber,
-                "authenticationType": this.authenticationType
+                "phoneNumber": this.phoneNumber, //modificar
+                "authenticationType": this.authenticationType //modificar 
             });
         } catch (error: any) {
             console.log(error);
@@ -70,7 +73,7 @@ class VIDUserController extends AbstractController {
     private async postSendClientData(req: Request, res: Response) {
         try {
                 //await db["User"].create(req.body);
-                await db["Client"].create({fname:req.body.fname, lname:req.body.lname, email:req.body.email ,phone: req.body.phone})
+                await db["Client"].create({first_name:req.body.first_name, last_name:req.body.last_name, email:req.body.email ,phone: req.body.phone})
                 console.log("Registo exitoso");
                 res.status(200).send("Registro exitoso");
         } catch (error: any) {
@@ -83,6 +86,6 @@ class VIDUserController extends AbstractController {
 
 export default VIDUserController;
 
-
+    
     
     
