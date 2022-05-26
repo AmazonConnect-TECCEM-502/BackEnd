@@ -7,11 +7,16 @@ import cors from "cors";
 import UserController from "./controllers/UserController";
 import CallController from "./controllers/CallController";
 import VIDUserController from "./controllers/VIDUserController";
+import ProblemCategoryController from "./controllers/ProblemCategoryController";
 
 const app = new Server({
   port: PORT,
   middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
-  controllers: [UserController.getInstance(), CallController.getInstance(), VIDUserController.getInstance()],
+  controllers: [UserController.getInstance(), 
+                CallController.getInstance(), 
+                VIDUserController.getInstance(),
+                ProblemCategoryController.getInstance()
+              ],
   env: NODE_ENV,
 });
 
