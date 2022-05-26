@@ -22,6 +22,7 @@ class VIDUserController extends AbstractController {
     this.router.get('/getAuthRes',this.getAuthRes.bind(this));
     this.router.get("/getUserData", this.getUserData.bind(this));
     this.router.post('/sendClientData',this.postSendClientData.bind(this));
+    this.router.post('/reset',this.postReset.bind(this));
     //this.router.post("/uploadCall", this.postUploadVideo.bind(this));
   }
   //Sobrante
@@ -34,6 +35,17 @@ class VIDUserController extends AbstractController {
             console.log(req.body.authenticationType);
             this.phoneNumber = req.body.phoneNumber
             this.authenticationType = req.body.authenticationType
+            res.status(200).send("Mensaje recibido");
+        } catch (error: any) {
+            console.log(error);
+            res.status(500).send("Error fatal");
+        }
+    }
+
+    private async postReset(req: Request, res: Response) {
+        try {
+            this.phoneNumber = ""
+            this.authenticationType = "not yet"
             res.status(200).send("Mensaje recibido");
         } catch (error: any) {
             console.log(error);
