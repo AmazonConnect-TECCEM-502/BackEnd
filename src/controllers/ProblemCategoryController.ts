@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
-import { number } from "joi";
 
 class ProblemCategoryController extends AbstractController {
   // Singleton
