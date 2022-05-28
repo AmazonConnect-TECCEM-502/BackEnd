@@ -15,44 +15,54 @@ class SettingsUserController extends AbstractController {
   }
 
   protected initRoutes(): void {
-    this.router.post('/changeFirstName',this.postChangeFirstName.bind(this));
-    this.router.post('/changeLastName',this.postChangeLastName.bind(this));
-
-    //this.router.get('/getAuthRes',this.getAuthRes.bind(this));
+    this.router.post('/changeName',this.postChangeName.bind(this));
+    this.router.post('/userData',this.postUserData.bind(this));
 
   }
 
-  private async postChangeFirstName(req: Request, res: Response) {
+
+    private async postChangeName(req: Request, res: Response) {
         try {
-            await db["User"].update({ first_name: req.body.first_name }, {
-                where: {
-                 user_id : req.body.user_id //Id que sale del TOKEN  
-                }
-              });
+            //First name
+            if(req.body.first_name != ""){
+                await db["User"].update({ first_name: req.body.first_name }, {
+                    where: {
+                     user_id : req.body.user_id //Id que sale del TOKEN  
+                    }
+                  });
+            }
             
-            res.status(200).send("Mensaje recibido - - Change First_name");
+
+              //Last Name
+            if(req.body.last_name != ""){
+                await db["User"].update({ last_name: req.body.last_name }, {
+                    where: {
+                    user_id : req.body.user_id //Id que sale del TOKEN  
+                    }
+                });
+            }
+              
+            res.status(200).send("Mensaje recibido - Change Name");
 
         } catch (error: any) {
             console.log(error);
             res.status(500).send("Error fatal");
         }
     }
-    private async postChangeLastName(req: Request, res: Response) {
+     
+    private async postUserData(req: Request, res: Response) {
         try {
-            await db["User"].update({ last_name: req.body.last_name }, {
-                where: {
-                 user_id : req.body.user_id //Id que sale del TOKEN  
-                }
-              });
-            
-            res.status(200).send("Mensaje recibido - Change Last_name");
+            let userData = await db["User"].findOne({where: {user_id: req.body.user_id }})
+            console.log("Datos de usuario:", userData);
+            res.status(200).send(userData);
 
         } catch (error: any) {
             console.log(error);
             res.status(500).send("Error fatal");
         }
     }
-        
+
+    
 }
 
 export default SettingsUserController;
