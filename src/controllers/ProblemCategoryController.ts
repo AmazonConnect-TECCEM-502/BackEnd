@@ -70,7 +70,6 @@ class ProblemCategoryController extends AbstractController {
           mapToModel: true,
         }
       );
-      console.log(qna)
       res.status(200).send(qna);
     } catch (err) {
       if (err instanceof Error) {
