@@ -24,6 +24,9 @@ class ProblemCategoryController extends AbstractController {
     );
     this.router.post("/postProblem", this.postProblem.bind(this));
     this.router.get("/getProblem", this.getProblems.bind(this));
+
+    this.router.get('/getProblemid', this.getProblemid.bind(this));
+    this.router.get("/getSolutions/:ID", this.getSolutions.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -77,6 +80,37 @@ class ProblemCategoryController extends AbstractController {
       } else {
         res.status(501).send({ message: "Error externo" });
       }
+    }
+  }
+
+  private async getProblemid(req: Request, res: Response){
+    try{
+      console.log(req.body);
+      const resultado = await db["Problem"].sequelize.query("Select problem_id as ID, problem_description as question from Problem")
+      console.log("Registro exitoso");
+      console.log(resultado[0])
+      res.status(200).send(resultado[0]);
+    }catch(err:any){
+      console.log("Error")
+      res.status(500).send("Error fatal:" +err);
+    }
+  }
+
+  private async getSolutions(req: Request, res: Response){
+    const ID = req.params.ID
+    try{
+      const resultado = await db["Solution"].findAll({
+        attributes: ['solution_description'],
+        where: {
+          problem_id: ID
+        }
+      })
+      console.log("Registro exitoso");
+      console.log(resultado)
+      res.status(200).send(resultado);
+    }catch(err:any){
+      console.log("Error")
+      res.status(500).send("Error fatal:" +err);
     }
   }
 
