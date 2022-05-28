@@ -15,8 +15,8 @@ class SalesContoller extends AbstractController {
   }
 
   protected initRoutes(): void {
-    //this.router.get("/getProducts", this.getProducts.bind(this));
-    //this.router.get("/getProducts", this.getClientProducts.bind(this));
+    this.router.get('/getProductCategories', this.getProductCategories.bind(this));
+    this.router.get('/getProduct', this.getProduct.bind(this));
     this.router.get('/getOwnedProducts', this.getOwnedProdcuts.bind(this));
     this.router.get('/getNotOwnedProducts', this.getProductsNotOwned.bind(this));
     this.router.get('/getRecommendedProducts', this.getRecommendedProducts.bind(this));
@@ -64,91 +64,34 @@ class SalesContoller extends AbstractController {
     }
   }
 
-  private async getClientProducts(req: Request, res: Response) {
+  private async getProductCategories(req: Request, res: Response) {
     try {
-      let productRelations = await db.sequelize.query(`SELECT product_id, product_name, product_description, price FROM Product WHERE product_id in (SELECT product_id FROM Orders WHERE client_id != ${req.body.client_id})`, {
-        model: db["Product"],
-        mapToModel: true
-      })
-      const parsedProducts = await this.parseProducts(productRelations);
-      res.status(200).send(parsedProducts);
+      let productsCategory = await db["Product_category"].findAll({
+        attributes: ["category_name", "category_id"],
+      });
+      res.status(200).send(productsCategory);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
-      } 
-      else {
+      } else {
         res.status(501).send({ message: "Error externo" });
       }
     }
   }
 
-  private async getProductsByCategory(req: Request, res: Response) {
+  private async getProduct(req: Request, res: Response) {
     try {
-      let products = await db.sequelize.query(`SELECT product_id, product_name, product_description, price FROM Product, Product-Category WHERE Product.product_id = Product-Category.product_id ORDER BY Procut-Category.category_id`);
+      let product = await db["Product"].findOne({where: {product_id: req.body.product_id}, attributes: ["product_id", "product_name", "product_description", "price"]});
+      res.status(200).send(product);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
-      } 
-      else {
+      } else {
         res.status(501).send({ message: "Error externo" });
       }
     }
   }
 
-  private async parseProducts(productRelations: [any]) {
-    let ownedProducts = {internet:[any], TV:[any], mobile:[any], streaming:[any], smartphones:[any]};
-    await productRelations.forEach(product => {
-      if (String(product.product_id)[0] === '1') {
-        ownedProducts['internet'].push(product);
-      }
-      else if (String(product.product_id)[0] === '2') {
-        ownedProducts['TV'].push(product);
-      }
-      else if (String(product.product_id)[0] === '3') {
-        ownedProducts['mobile'].push(product);
-      }
-      else if (String(product.product_id)[0] === '4') {
-        ownedProducts['streaming'].push(product);
-      }
-      else if (String(product.product_id)[0] === '5') {
-        ownedProducts['smartphones'].push(product);
-      }
-    });
-    return ownedProducts;
-  }
-
-  private async getProducts(req: Request, res: Response) {
-    try {
-      const userProducts = {
-        internet: {
-          image: "ejemploTelmex",
-          name: "Internet plan",
-          price: "100",
-          desc: "Un plan de servicio de Internet con una velocidad de 50 megas.",
-        },
-        TV: {
-          image: "ejemploTelmex",
-          name: "TV plan",
-          price: "150",
-          desc: "Un plan de servicio de TV con 100 canales.",
-        },
-        mobile: {
-          image: "ejemploTelmex",
-          name: "Mobile roaming plan",
-          price: "200",
-          desc: "Un plan de datos celulares con un limite de consumo de ancho de banda de 1 gigabyte.",
-        },
-      };
-      res.status(200).send(userProducts);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).send({ message: error.message });
-      } 
-      else {
-        res.status(501).send({ message: "Error externo" });
-      }
-    }
-  }
 }
 
 export default SalesContoller;
