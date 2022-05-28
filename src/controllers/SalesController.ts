@@ -15,8 +15,8 @@ class SalesContoller extends AbstractController {
   }
 
   protected initRoutes(): void {
-    //this.router.get("/getProducts", this.getProducts.bind(this));
-    //this.router.get("/getProducts", this.getClientProducts.bind(this));
+    this.router.get('/getProductCategories', this.getProductCategories.bind(this));
+    this.router.get('/getProduct', this.getProduct.bind(this));
     this.router.get('/getOwnedProducts', this.getOwnedProdcuts.bind(this));
     this.router.get('/getNotOwnedProducts', this.getProductsNotOwned.bind(this));
     this.router.get('/getRecommendedProducts', this.getRecommendedProducts.bind(this));
@@ -59,6 +59,34 @@ class SalesContoller extends AbstractController {
         res.status(500).send({ message: error.message });
       } 
       else {
+        res.status(501).send({ message: "Error externo" });
+      }
+    }
+  }
+
+  private async getProductCategories(req: Request, res: Response) {
+    try {
+      let productsCategory = await db["Product_category"].findAll({
+        attributes: ["category_name", "category_id"],
+      });
+      res.status(200).send(productsCategory);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "Error externo" });
+      }
+    }
+  }
+
+  private async getProduct(req: Request, res: Response) {
+    try {
+      let product = await db["Product"].findOne({where: {product_id: req.body.product_id}, attributes: ["product_id", "product_name", "product_description", "price"]});
+      res.status(200).send(product);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
         res.status(501).send({ message: "Error externo" });
       }
     }
