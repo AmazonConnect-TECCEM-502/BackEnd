@@ -27,6 +27,8 @@ class ProblemCategoryController extends AbstractController {
 
     this.router.get('/getProblemid', this.getProblemid.bind(this));
     this.router.get("/getSolutions/:ID", this.getSolutions.bind(this));
+    this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
+    this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -100,7 +102,7 @@ class ProblemCategoryController extends AbstractController {
     const ID = req.params.ID
     try{
       const resultado = await db["Solution"].findAll({
-        attributes: ['solution_description'],
+        attributes: ['solution_description', 'solution_id'],
         where: {
           problem_id: ID
         }
@@ -111,6 +113,34 @@ class ProblemCategoryController extends AbstractController {
     }catch(err:any){
       console.log("Error")
       res.status(500).send("Error fatal:" +err);
+    }
+  }
+
+  private async deleteSolution(req:Request,res:Response){
+    const ID = req.params.ID
+    try{
+        console.log(req.body);
+        await db["Solution"].destroy({
+          where:{
+            solution_id: ID
+          }
+        }),
+        console.log("Registro exitoso");
+        res.status(200).send("Registro exitoso");
+    }catch(err:any){
+        console.log("Error")
+        res.status(500).send("Error fatal:" +err);
+    }
+  }
+  private async postCreateSolution(req:Request,res:Response){
+    try{
+        console.log(req.body);
+        await db["Solution"].create(req.body);
+        console.log("Registro exitoso");
+        res.status(200).send("Registro exitoso");
+    }catch(err:any){
+        console.log("Error")
+        res.status(500).send("Error fatal:" +err);
     }
   }
 
