@@ -10,6 +10,7 @@ import VIDUserController from "./controllers/VIDUserController";
 import ProblemCategoryController from "./controllers/ProblemCategoryController";
 import SalesContoller from "./controllers/SalesController";
 import ProductCategoryController from "./controllers/ProductCategoryController";
+import SettingsUserController from "./controllers/SettingsUserController";
 
 const app = new Server({
   port: PORT,
@@ -21,6 +22,7 @@ const app = new Server({
     ProblemCategoryController.getInstance(),
     SalesContoller.getInstance(),
     ProductCategoryController.getInstance(),
+    SettingsUserController.getInstance(),
   ],
 
   env: NODE_ENV,

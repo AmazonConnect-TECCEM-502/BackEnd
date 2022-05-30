@@ -1,3 +1,11 @@
+/*
+  Author: Eric Alexis Castañeda Bravo
+  Description: Routes for the voice ID
+
+  Usage:
+    Back end Routes
+*/
+
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
@@ -25,7 +33,7 @@ class VIDUserController extends AbstractController {
     this.router.post('/reset',this.postReset.bind(this));
     //this.router.post("/uploadCall", this.postUploadVideo.bind(this));
   }
-  //Sobrante
+
   private async postSendAuthRes(req: Request, res: Response) {
         try {
             console.log("El teléfono del usuario es: ");
@@ -53,6 +61,7 @@ class VIDUserController extends AbstractController {
         }
     }
 
+        //get the info of one user
     private async getUserData(req: Request, res: Response) {
         try{
             
@@ -68,13 +77,12 @@ class VIDUserController extends AbstractController {
             }
         }
     
-        //Ponerlo o asociarlo a la clase no es correcto (No guardar los datos realmente)
     private async getAuthRes(req: Request, res: Response) {
         try {
             console.log("Enviando autenticación al front")
             res.status(200).send({
-                "phoneNumber": this.phoneNumber, //modificar
-                "authenticationType": this.authenticationType //modificar 
+                "phoneNumber": this.phoneNumber, 
+                "authenticationType": this.authenticationType 
             });
         } catch (error: any) {
             console.log(error);
@@ -82,9 +90,9 @@ class VIDUserController extends AbstractController {
         }
     }
 
+        //Create a new client on the data base
     private async postSendClientData(req: Request, res: Response) {
         try {
-                //await db["User"].create(req.body);
                 await db["Client"].create({first_name:req.body.first_name, last_name:req.body.last_name, email:req.body.email ,phone: req.body.phone})
                 console.log("Registo exitoso");
                 res.status(200).send("Registro exitoso");

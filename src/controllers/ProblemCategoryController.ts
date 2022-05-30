@@ -24,6 +24,11 @@ class ProblemCategoryController extends AbstractController {
     );
     this.router.post("/postProblem", this.postProblem.bind(this));
     this.router.get("/getProblem", this.getProblems.bind(this));
+
+    this.router.get('/getProblemid', this.getProblemid.bind(this));
+    this.router.get("/getSolutions/:ID", this.getSolutions.bind(this));
+    this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
+    this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -70,7 +75,6 @@ class ProblemCategoryController extends AbstractController {
           mapToModel: true,
         }
       );
-      console.log(qna)
       res.status(200).send(qna);
     } catch (err) {
       if (err instanceof Error) {
@@ -78,6 +82,65 @@ class ProblemCategoryController extends AbstractController {
       } else {
         res.status(501).send({ message: "Error externo" });
       }
+    }
+  }
+
+  private async getProblemid(req: Request, res: Response){
+    try{
+      console.log(req.body);
+      const resultado = await db["Problem"].sequelize.query("Select problem_id as ID, problem_description as question from Problem")
+      console.log("Registro exitoso");
+      console.log(resultado[0])
+      res.status(200).send(resultado[0]);
+    }catch(err:any){
+      console.log("Error")
+      res.status(500).send("Error fatal:" +err);
+    }
+  }
+
+  private async getSolutions(req: Request, res: Response){
+    const ID = req.params.ID
+    try{
+      const resultado = await db["Solution"].findAll({
+        attributes: ['solution_description', 'solution_id'],
+        where: {
+          problem_id: ID
+        }
+      })
+      console.log("Registro exitoso");
+      console.log(resultado)
+      res.status(200).send(resultado);
+    }catch(err:any){
+      console.log("Error")
+      res.status(500).send("Error fatal:" +err);
+    }
+  }
+
+  private async deleteSolution(req:Request,res:Response){
+    const ID = req.params.ID
+    try{
+        console.log(req.body);
+        await db["Solution"].destroy({
+          where:{
+            solution_id: ID
+          }
+        }),
+        console.log("Registro exitoso");
+        res.status(200).send("Registro exitoso");
+    }catch(err:any){
+        console.log("Error")
+        res.status(500).send("Error fatal:" +err);
+    }
+  }
+  private async postCreateSolution(req:Request,res:Response){
+    try{
+        console.log(req.body);
+        await db["Solution"].create(req.body);
+        console.log("Registro exitoso");
+        res.status(200).send("Registro exitoso");
+    }catch(err:any){
+        console.log("Error")
+        res.status(500).send("Error fatal:" +err);
     }
   }
 
