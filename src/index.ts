@@ -14,15 +14,25 @@ import ProductCategoryController from "./controllers/ProductCategoryController";
 const app = new Server({
   port: PORT,
   middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
-  controllers: [UserController.getInstance(), 
-                CallController.getInstance(), 
-                VIDUserController.getInstance(),
-                ProblemCategoryController.getInstance(),
-                SalesContoller.getInstance(),
-                ProductCategoryController.getInstance()
-              ],
+  controllers: [
+    UserController.getInstance(),
+    CallController.getInstance(),
+    VIDUserController.getInstance(),
+    ProblemCategoryController.getInstance(),
+    SalesContoller.getInstance(),
+    ProductCategoryController.getInstance(),
+  ],
 
   env: NODE_ENV,
 });
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: string;
+      token: string;
+    }
+  }
+}
 
 app.init();
