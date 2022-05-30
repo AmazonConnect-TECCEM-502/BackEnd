@@ -1,3 +1,11 @@
+/*
+  Author: Eric Alexis Castañeda Bravo
+  Description: Routes for the user settings
+
+  Usage:
+    Back end Routes
+*/
+
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
@@ -20,14 +28,14 @@ class SettingsUserController extends AbstractController {
 
   }
 
-
+    //Change the first and last name of the user on the data base
     private async postChangeName(req: Request, res: Response) {
         try {
             //First name
             if(req.body.first_name != ""){
                 await db["User"].update({ first_name: req.body.first_name }, {
                     where: {
-                     user_id : req.body.user_id //Id que sale del TOKEN  
+                     user_id : req.body.user_id 
                     }
                   });
             }
@@ -37,7 +45,7 @@ class SettingsUserController extends AbstractController {
             if(req.body.last_name != ""){
                 await db["User"].update({ last_name: req.body.last_name }, {
                     where: {
-                    user_id : req.body.user_id //Id que sale del TOKEN  
+                    user_id : req.body.user_id 
                     }
                 });
             }
@@ -49,7 +57,8 @@ class SettingsUserController extends AbstractController {
             res.status(500).send("Error fatal");
         }
     }
-     
+
+    //Find the actual data of a user on the data base 
     private async postUserData(req: Request, res: Response) {
         try {
             let userData = await db["User"].findOne({where: {user_id: req.body.user_id }})
