@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
-import db from '../models'
+import db from "../models";
 
 class UserController extends AbstractController {
   // Singleton
@@ -38,12 +38,15 @@ class UserController extends AbstractController {
 
   private async getReadAgents(req: Request, res: Response) {
     try {
-      let agent = await db.sequelize.query("SELECT first_name, last_name FROM User WHERE user_type like 'agent%'", {
-        model: db["User"],
-        mapToModel: true
-      })
+      let agent = await db.sequelize.query(
+        "SELECT first_name, last_name FROM User WHERE user_type like 'agent%'",
+        {
+          model: db["User"],
+          mapToModel: true,
+        }
+      );
       //let agent2 = await db["User"].findAll();
-      res.status(200).send(agent)
+      res.status(200).send(agent);
     } catch (error) {
       res.status(500).send(error);
     }

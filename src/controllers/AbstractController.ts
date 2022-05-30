@@ -20,16 +20,16 @@ export default abstract class AbstractController {
   public get prefix(): string {
     return this._prefix;
   }
+
   public get router(): Router {
     return this._router;
   }
 
-  constructor(prefix: string) {
+  protected constructor(prefix: string) {
     this._prefix = prefix;
     this.initRoutes();
   }
-
+  //Inicializar las rutas
   protected abstract initRoutes(): void;
-
-  protected abstract validateBody(type: any): any;
+  //Validar el cuerpo de la petición
 }

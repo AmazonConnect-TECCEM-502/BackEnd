@@ -25,7 +25,7 @@ export default class PermissionMiddleware {
     try {
       const user = await db["User"].findOne({
         where: {
-          cognito_uuid: req.user,
+          email: req.user,
         },
         attributes: ["user_type"],
       });
@@ -53,7 +53,7 @@ export default class PermissionMiddleware {
     try {
       const user = await db["User"].findOne({
         where: {
-          cognito_uuid: req.user,
+          email: req.user,
         },
         attributes: ["user_type"],
       });

@@ -160,11 +160,6 @@ class AuthenticationController extends AbstractController {
               errorMessage: "Must be between 4 and 20 characters",
             },
           },
-          user_type: {
-            isNumeric: {
-              errorMessage: "Must be a number",
-            },
-          },
         });
       case "signin":
         return checkSchema({

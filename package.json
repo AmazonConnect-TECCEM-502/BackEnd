@@ -24,6 +24,7 @@
     "@types/async": "^3.2.13",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/jwk-to-pem": "^2.0.1",
+    "@types/node-fetch": "^2.6.1",
     "aws-sdk": "^2.1145.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -35,7 +36,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.5",
     "mysql2": "^2.3.3",
-    "node-fetch": "^3.2.4",
+    "node-fetch": "^2.6.1",
     "sequelize": "^6.19.0",
     "uuid": "^8.3.2"
   },
