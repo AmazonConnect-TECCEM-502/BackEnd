@@ -11,20 +11,32 @@ import ProblemCategoryController from "./controllers/ProblemCategoryController";
 import SalesContoller from "./controllers/SalesController";
 import ProductCategoryController from "./controllers/ProductCategoryController";
 import SettingsUserController from "./controllers/SettingsUserController";
+import AuthenticationController from "./controllers/AuthenticationController";
 
 const app = new Server({
   port: PORT,
   middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
-  controllers: [UserController.getInstance(), 
-                CallController.getInstance(), 
-                VIDUserController.getInstance(),
-                ProblemCategoryController.getInstance(),
-                SalesContoller.getInstance(),
-                ProductCategoryController.getInstance(),
-                SettingsUserController.getInstance()
-              ],
+  controllers: [
+    UserController.getInstance(),
+    CallController.getInstance(),
+    VIDUserController.getInstance(),
+    ProblemCategoryController.getInstance(),
+    SalesContoller.getInstance(),
+    ProductCategoryController.getInstance(),
+    SettingsUserController.getInstance(),
+    AuthenticationController.getInstance(),
+  ],
 
   env: NODE_ENV,
 });
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: string;
+      token: string;
+    }
+  }
+}
 
 app.init();

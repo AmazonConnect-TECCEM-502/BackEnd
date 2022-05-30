@@ -43,7 +43,7 @@ class ProductCategoryController extends AbstractController {
 
   private async postProduct(req: Request, res: Response) {
     try {
-      this.productsID = req.body.category_id
+      this.productsID = req.body.category_id;
       res.status(200).send("Recibi id");
     } catch (err) {
       if (err instanceof Error) {
@@ -56,9 +56,8 @@ class ProductCategoryController extends AbstractController {
 
   private async getProducts(req: Request, res: Response) {
     try {
-
-      let products = 0
-      console.log(products)
+      let products = 0;
+      console.log(products);
       res.status(200).send(products);
     } catch (err) {
       if (err instanceof Error) {
@@ -68,7 +67,6 @@ class ProductCategoryController extends AbstractController {
       }
     }
   }
-
 }
 
 export default ProductCategoryController;

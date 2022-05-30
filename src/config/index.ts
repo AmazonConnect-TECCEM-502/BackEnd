@@ -34,3 +34,12 @@ export const AWS_S3_SECRET_ACCESS_KEY = process.env.AWS_S3_SECRET_ACCESS_KEY
 export const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET
   ? process.env.AWS_S3_BUCKET
   : "";
+export const COGNITO_APP_CLIENT_ID = process.env.COGNITO_APP_CLIENT_ID
+  ? process.env.COGNITO_APP_CLIENT_ID
+  : "";
+export const COGNITO_APP_SECRET_HASH = process.env.COGNITO_APP_SECRET_HASH
+  ? process.env.COGNITO_APP_SECRET_HASH
+  : "";
+export const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID
+  ? process.env.COGNITO_USER_POOL_ID
+  : "";
