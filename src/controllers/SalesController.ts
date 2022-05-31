@@ -29,8 +29,7 @@ class SalesContoller extends AbstractController {
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
-      } 
-      else {
+      } else {
         res.status(501).send({ message: "Error externo" });
       }
     }
@@ -57,8 +56,7 @@ class SalesContoller extends AbstractController {
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
-      } 
-      else {
+      } else {
         res.status(501).send({ message: "Error externo" });
       }
     }
@@ -81,7 +79,15 @@ class SalesContoller extends AbstractController {
 
   private async getProduct(req: Request, res: Response) {
     try {
-      let product = await db["Product"].findOne({where: {product_id: req.params.product_id}, attributes: ["product_id", "product_name", "product_description", "price"]});
+      let product = await db["Product"].findOne({
+        where: { product_id: req.params.product_id },
+        attributes: [
+          "product_id",
+          "product_name",
+          "product_description",
+          "price",
+        ],
+      });
       res.status(200).send(product);
     } catch (error) {
       if (error instanceof Error) {
@@ -91,7 +97,6 @@ class SalesContoller extends AbstractController {
       }
     }
   }
-
 }
 
 export default SalesContoller;

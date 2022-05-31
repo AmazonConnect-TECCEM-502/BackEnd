@@ -25,7 +25,7 @@ class ProblemCategoryController extends AbstractController {
     this.router.post("/postProblem", this.postProblem.bind(this));
     this.router.get("/getProblem", this.getProblems.bind(this));
 
-    this.router.get('/getProblemid', this.getProblemid.bind(this));
+    this.router.get("/getProblemid", this.getProblemid.bind(this));
     this.router.get("/getSolutions/:ID", this.getSolutions.bind(this));
     this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
     this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
@@ -53,7 +53,7 @@ class ProblemCategoryController extends AbstractController {
 
   private async postProblem(req: Request, res: Response) {
     try {
-      this.categoryId = req.body.category_id
+      this.categoryId = req.body.category_id;
       res.status(200).send("Recibi id");
     } catch (err) {
       if (err instanceof Error) {
@@ -66,7 +66,6 @@ class ProblemCategoryController extends AbstractController {
 
   private async getProblems(req: Request, res: Response) {
     try {
-
       let qna = await db.sequelize.query(
         "SELECT problem_description, category_id FROM `Category-Problem` as cp, Problem as p WHERE cp.problem_id = p.problem_id and cp.category_id = " +
           this.categoryId,
@@ -85,65 +84,66 @@ class ProblemCategoryController extends AbstractController {
     }
   }
 
-  private async getProblemid(req: Request, res: Response){
-    try{
+  private async getProblemid(req: Request, res: Response) {
+    try {
       console.log(req.body);
-      const resultado = await db["Problem"].sequelize.query("Select problem_id as ID, problem_description as question from Problem")
+      const resultado = await db["Problem"].sequelize.query(
+        "Select problem_id as ID, problem_description as question from Problem"
+      );
       console.log("Registro exitoso");
-      console.log(resultado[0])
+      console.log(resultado[0]);
       res.status(200).send(resultado[0]);
-    }catch(err:any){
-      console.log("Error")
-      res.status(500).send("Error fatal:" +err);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
     }
   }
 
-  private async getSolutions(req: Request, res: Response){
-    const ID = req.params.ID
-    try{
+  private async getSolutions(req: Request, res: Response) {
+    const ID = req.params.ID;
+    try {
       const resultado = await db["Solution"].findAll({
-        attributes: ['solution_description', 'solution_id'],
+        attributes: ["solution_description", "solution_id"],
         where: {
-          problem_id: ID
-        }
-      })
+          problem_id: ID,
+        },
+      });
       console.log("Registro exitoso");
-      console.log(resultado)
+      console.log(resultado);
       res.status(200).send(resultado);
-    }catch(err:any){
-      console.log("Error")
-      res.status(500).send("Error fatal:" +err);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
     }
   }
 
-  private async deleteSolution(req:Request,res:Response){
-    const ID = req.params.ID
-    try{
-        console.log(req.body);
-        await db["Solution"].destroy({
-          where:{
-            solution_id: ID
-          }
-        }),
+  private async deleteSolution(req: Request, res: Response) {
+    const ID = req.params.ID;
+    try {
+      console.log(req.body);
+      await db["Solution"].destroy({
+        where: {
+          solution_id: ID,
+        },
+      }),
         console.log("Registro exitoso");
-        res.status(200).send("Registro exitoso");
-    }catch(err:any){
-        console.log("Error")
-        res.status(500).send("Error fatal:" +err);
+      res.status(200).send("Registro exitoso");
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
     }
   }
-  private async postCreateSolution(req:Request,res:Response){
-    try{
-        console.log(req.body);
-        await db["Solution"].create(req.body);
-        console.log("Registro exitoso");
-        res.status(200).send("Registro exitoso");
-    }catch(err:any){
-        console.log("Error")
-        res.status(500).send("Error fatal:" +err);
+  private async postCreateSolution(req: Request, res: Response) {
+    try {
+      console.log(req.body);
+      await db["Solution"].create(req.body);
+      console.log("Registro exitoso");
+      res.status(200).send("Registro exitoso");
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
     }
   }
-
 }
 
 export default ProblemCategoryController;
