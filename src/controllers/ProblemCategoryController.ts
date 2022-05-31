@@ -29,6 +29,10 @@ class ProblemCategoryController extends AbstractController {
     this.router.get("/getSolutions/:ID", this.getSolutions.bind(this));
     this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
     this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
+    this.router.post("/postCreateProblem", this.postCreateProblem.bind(this));
+    this.router.get("/getCategories",this.getCategories.bind(this));
+    this.router.get("/getProposals/:ID",this.getProposals.bind(this));
+    this.router.post("/postApproveProposals/:ID", this.postApproveProposals.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -90,8 +94,7 @@ class ProblemCategoryController extends AbstractController {
       const resultado = await db["Problem"].sequelize.query(
         "Select problem_id as ID, problem_description as question from Problem"
       );
-      console.log("Registro exitoso");
-      console.log(resultado[0]);
+      console.log("Consulta exitosa");
       res.status(200).send(resultado[0]);
     } catch (err: any) {
       console.log("Error");
@@ -108,8 +111,7 @@ class ProblemCategoryController extends AbstractController {
           problem_id: ID,
         },
       });
-      console.log("Registro exitoso");
-      console.log(resultado);
+      console.log("Consulta exitosa");
       res.status(200).send(resultado);
     } catch (err: any) {
       console.log("Error");
@@ -135,7 +137,6 @@ class ProblemCategoryController extends AbstractController {
   }
   private async postCreateSolution(req: Request, res: Response) {
     try {
-      console.log(req.body);
       await db["Solution"].create(req.body);
       console.log("Registro exitoso");
       res.status(200).send("Registro exitoso");
@@ -144,6 +145,68 @@ class ProblemCategoryController extends AbstractController {
       res.status(500).send("Error fatal:" + err);
     }
   }
+  private async postCreateProblem(req:Request,res:Response){
+    try{
+        await db["Problem"].create({
+          problem_description: req.body.problem_description,
+          submitted_by: req.body.submitted_by 
+        })  
+        .then((resultado: any) => {
+          const problem_id = resultado.dataValues.problem_id
+          db["Category-Problem"].create({
+            problem_id: problem_id,
+            category_id: req.body.category_id
+          })
+        });
+        console.log("Registro exitoso");
+        res.status(200).send("Registro exitoso");
+    }catch(err:any){
+        console.log("Error")
+        res.status(500).send("Error fatal:" +err);
+    }
+  }
+  private async getCategories(req: Request, res: Response) {
+    try {
+      const resultado = await db["Problem_category"].findAll();
+      console.log("Consulta existosa");
+      res.status(200).send(resultado);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
+    }
+  }
+  private async getProposals(req: Request, res: Response) {
+    const ID = req.params.ID;
+    try {
+      const resultado = await db["Solution"].findAll({
+        where: {
+          approved_date: null,
+          problem_id: ID
+        }
+      });
+      console.log("Consulta exitosa");
+      console.log(resultado);
+      res.status(200).send(resultado);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
+    }
+  }
+  private async postApproveProposals(req: Request, res: Response) {
+    const ID = req.params.ID;
+    const date = req.body.date;
+    console.log(date)
+    try {
+      const resultado = await db["Solution"].UPDATE("UPDATE Solution SET approved_date =" + date + " WHERE solution_id =" + ID);
+      console.log("Consulta exitosa");
+      console.log(resultado);
+      res.status(200).send(resultado);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
+    }
+  }
+  
 }
 
 export default ProblemCategoryController;
