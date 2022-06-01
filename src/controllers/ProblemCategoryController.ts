@@ -121,13 +121,14 @@ class ProblemCategoryController extends AbstractController {
   private async getSolutions(req: Request, res: Response) {
     const ID = this.solutionId;
     try {
-      const resultado = await db["Solution"].findAll({
-        attributes: ["solution_description", "problem_id"],
-        where: {
-          //approved_date: {not: null},
-          problem_id: ID
+      let resultado = await db.sequelize.query(
+          `SELECT solution_description, problem_id, approved_date FROM Solution AS Solution WHERE Solution.approved_date IS NOT NULL AND problem_id = ${ID}`,
+        {
+          model: db["Solution"],
+          mapToModel: true,
         }
-      });
+      );
+
       console.log("Consulta exitosa");
       res.status(200).send(resultado);
     } catch (err: any) {
