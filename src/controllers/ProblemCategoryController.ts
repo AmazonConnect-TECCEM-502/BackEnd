@@ -214,7 +214,13 @@ class ProblemCategoryController extends AbstractController {
     const date = req.body.date;
     console.log(date)
     try {
-      const resultado = await db["Solution"].UPDATE("UPDATE Solution SET approved_date =" + date + " WHERE solution_id =" + ID);
+      const resultado = await db["Solution"].findOne({
+        where:{
+          solution_id : ID
+        }
+      });
+      resultado.approved_date = req.body.date
+      await resultado.save()
       console.log("Consulta exitosa");
       console.log(resultado);
       res.status(200).send(resultado);
