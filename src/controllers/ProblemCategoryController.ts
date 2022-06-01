@@ -24,11 +24,11 @@ class ProblemCategoryController extends AbstractController {
       this.getProblemCategorys.bind(this)
     );
     this.router.post("/postProblem", this.postProblem.bind(this));
-    this.router.get("/getProblem", this.getProblems.bind(this));
+    this.router.get("/getProblem/:id", this.getProblems.bind(this));
     this.router.post("/postProblemId", this.postProblemId.bind(this));
 
     this.router.get("/getProblemid", this.getProblemid.bind(this));
-    this.router.get("/getSolutions", this.getSolutions.bind(this));
+    this.router.get("/getSolutions/:id", this.getSolutions.bind(this));
     this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
     this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
     this.router.post("/postCreateProblem", this.postCreateProblem.bind(this));
@@ -73,7 +73,7 @@ class ProblemCategoryController extends AbstractController {
     try {
       let qna = await db.sequelize.query(
         "SELECT problem_description, category_id, p.problem_id FROM `Category-Problem` as cp, Problem as p WHERE cp.problem_id = p.problem_id and cp.category_id = " +
-          this.categoryId,
+          req.params.id,
         {
           model: db["Category-Problem"],
           mapToModel: true,
@@ -119,7 +119,7 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async getSolutions(req: Request, res: Response) {
-    const ID = this.solutionId;
+    const ID = req.params.id;
     try {
       let resultado = await db.sequelize.query(
           `SELECT solution_description, problem_id, approved_date FROM Solution AS Solution WHERE Solution.approved_date IS NOT NULL AND problem_id = ${ID}`,
