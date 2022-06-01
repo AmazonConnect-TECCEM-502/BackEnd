@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
+import { timeStamp } from "console";
 
 class SalesContoller extends AbstractController {
   private static instance: SalesContoller;
@@ -19,6 +20,7 @@ class SalesContoller extends AbstractController {
     this.router.get('/getOwnedProducts/:client_id/:category_id', this.getOwnedProdcuts.bind(this));
     this.router.get('/getNotOwnedProducts/:client_id/:category_id', this.getProductsNotOwned.bind(this));
     this.router.get('/getRecommendedProducts/:client_id/:category_id', this.getRecommendedProducts.bind(this));
+    this.router.post('/buyProduct', this.buyProduct.bind(this));
   }
 
   private async getOwnedProdcuts(req: Request, res: Response) {
@@ -91,9 +93,32 @@ class SalesContoller extends AbstractController {
           "product_name",
           "product_description",
           "price",
+          "stock"
         ],
       });
       res.status(200).send(product);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "Error externo" });
+      }
+    }
+  }
+
+  private async buyProduct(req: Request, res: Response) {
+    try {
+      const product = await db["Product"].findOne({
+        where: { product_id: req.body.product_id}
+      });
+      product.stock = product.stock - 1;
+      product.save();
+      await db["Order"].create({
+        total: product.price,
+        product_id: req.body.product_id,
+        client_id: req.body.client_id
+      });
+      res.status(200).send(`${product.product_name} added to client ${req.body.client_id}`)
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
