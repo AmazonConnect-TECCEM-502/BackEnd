@@ -18,6 +18,11 @@ class UserController extends AbstractController {
     this.router.get("/readUser", this.getReadUser.bind(this));
     this.router.get("/readUsers", this.getReadUsers.bind(this));
     this.router.get("/readAgents", this.getReadAgents.bind(this));
+    this.router.get(
+      "/userType",
+      this.authMiddleware.verifyToken,
+      this.getUserType.bind(this)
+    );
 
     // Agregar más rutas
   }
@@ -49,6 +54,25 @@ class UserController extends AbstractController {
       res.status(200).send(agent);
     } catch (error) {
       res.status(500).send(error);
+    }
+  }
+
+  private async getUserType(req: Request, res: Response) {
+    const user = await db["User"].findOne({
+      where: {
+        cognito_uuid: req.user,
+      },
+    });
+
+    if (user != null) {
+      res.status(200).json({
+        email: user.email,
+        user_type: user.user_type,
+      });
+    } else {
+      res.status(401).json({
+        error: "Authentication error",
+      });
     }
   }
 }
