@@ -28,15 +28,15 @@ class AuthMiddleware {
       const token = req.headers.authorization.replace("Bearer ", "");
       const decodedJWT: any = jwt.decode(token, { complete: true });
       if (!decodedJWT) {
-        return res
-          .status(401)
-          .send({
-            code: "InvalidTokenException",
-            message: "The token is no valid",
-          });
+        return res.status(401).send({
+          code: "InvalidTokenException",
+          message: "The token is no valid 1",
+        });
       }
       const kid = decodedJWT.header.kid;
       if (kid !== undefined) {
+        // console.log(pems);
+        // console.log(kid)
         if (Object.keys(pems).includes(kid)) {
           console.log("Verificado");
           //return res.status(401).end();
@@ -44,32 +44,26 @@ class AuthMiddleware {
         const pem = pems[kid];
         jwt.verify(token, pem, { algorithms: ["RS256"] }, function (err: any) {
           if (err) {
-            return res
-              .status(401)
-              .send({
-                code: "InvalidTokenException",
-                message: "The token is no valid",
-              });
+            return res.status(401).send({
+              code: "InvalidTokenException",
+              message: "The token is no valid 2",
+            });
           }
         });
         req.user = decodedJWT.payload.username;
         req.token = token;
         next();
       } else {
-        return res
-          .status(401)
-          .send({
-            code: "InvalidTokenException",
-            message: "The token is no valid",
-          });
+        return res.status(401).send({
+          code: "InvalidTokenException",
+          message: "The token is no valid 3",
+        });
       }
     } else {
-      res
-        .status(401)
-        .send({
-          code: "NoTokenFound",
-          message: "The token is not present in the request",
-        });
+      res.status(401).send({
+        code: "NoTokenFound",
+        message: "The token is not present in the request",
+      });
     }
   }
 
