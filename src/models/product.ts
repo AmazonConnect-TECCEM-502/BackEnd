@@ -7,6 +7,7 @@ const fkName = "product_id";
 
 interface ModelAttributes {
   product_id: number;
+  product_sku: number;
   product_name: string;
   product_description: string;
   price: number;
@@ -16,6 +17,7 @@ interface ModelAttributes {
 module.exports = (sequelize: any, DataTypes: any) => {
   class Product extends Model<ModelAttributes> implements ModelAttributes {
     product_id!: number;
+    product_sku!: number;
     product_name!: string;
     product_description!: string;
     price!: number;
@@ -37,6 +39,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
+      },
+      product_sku: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       product_name: {
         type: DataTypes.STRING,
