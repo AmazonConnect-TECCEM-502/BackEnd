@@ -1,20 +1,26 @@
 /*
-  Author: Eric Alexis Castañeda Bravo
+  Authors: 
+  Luis Ignacio Ferro Salinas
+  Eric Alexis Castañeda Bravo
   Description: Routes for the voice ID
 
   Usage:
     Back end Routes
+
+  Last update: 
+  Luis Ferro may 31
 */
 
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
+import CallsStatusModel from "../modelsNOSQL/callsStatus";
 
 class VIDUserController extends AbstractController {
   private static instance: VIDUserController;
 
-  private phoneNumber: string = "";
-  private authenticationType = "Not yet"; // si no no registrado
+  //private phoneNumber: string = "";
+  //private authenticationType = "Not yet"; // si no no registrado
 
   public static getInstance(): AbstractController {
     if (this.instance) {
@@ -26,8 +32,8 @@ class VIDUserController extends AbstractController {
 
   protected initRoutes(): void {
     this.router.post("/sendAuthRes", this.postSendAuthRes.bind(this));
-    this.router.get("/getAuthRes", this.getAuthRes.bind(this));
-    this.router.get("/getUserData", this.getUserData.bind(this));
+    this.router.post("/getAuthRes", this.getAuthRes.bind(this));
+    this.router.post("/getUserData", this.getUserData.bind(this));
     this.router.post("/sendClientData", this.postSendClientData.bind(this));
     this.router.post("/reset", this.postReset.bind(this));
     //this.router.post("/uploadCall", this.postUploadVideo.bind(this));
@@ -40,8 +46,12 @@ class VIDUserController extends AbstractController {
 
       console.log("Resultado de autenticación: ");
       console.log(req.body.authenticationType);
-      this.phoneNumber = req.body.phoneNumber;
-      this.authenticationType = req.body.authenticationType;
+      
+      // Receiving info from voiceID and storing it in dynamoDB.
+      await CallsStatusModel.create({phoneNumber: req.body.phoneNumber,
+        authenticationType: req.body.authenticationType});
+
+
       res.status(200).send("Mensaje recibido");
     } catch (error: any) {
       console.log(error);
@@ -51,9 +61,8 @@ class VIDUserController extends AbstractController {
 
   private async postReset(req: Request, res: Response) {
     try {
-      this.phoneNumber = "";
-      this.authenticationType = "not yet";
-      res.status(200).send("Mensaje recibido");
+      await CallsStatusModel.update({phoneNumber: req.body.phoneNumber, authenticationType: "not yet"});
+      res.status(200).send("Orden de resetear recibida");
     } catch (error: any) {
       console.log(error);
       res.status(500).send("Error fatal");
@@ -64,7 +73,7 @@ class VIDUserController extends AbstractController {
   private async getUserData(req: Request, res: Response) {
     try {
       let userData = await db["Client"].findOne({
-        where: { phone: this.phoneNumber },
+        where: { phone: req.body.phoneNumber },
       });
       console.log("Datos de usuario:", userData);
       res.status(200).send(userData);
@@ -79,11 +88,13 @@ class VIDUserController extends AbstractController {
 
   private async getAuthRes(req: Request, res: Response) {
     try {
-      console.log("Enviando autenticación al front");
-      res.status(200).send({
-        phoneNumber: this.phoneNumber,
-        authenticationType: this.authenticationType,
-      });
+      // Depending on the phone number given by the agent, we
+      // search for authentication results in dynamoDB.
+
+      const callPhoneNumber = req.body.phoneNumber;
+      const callsStatus = await CallsStatusModel.query(callPhoneNumber).exec().promise();
+      console.log("Enviando autenticación al front")
+      res.status(200).send(callsStatus[0].Items[0]);  // This is the json with phone and authType.
     } catch (error: any) {
       console.log(error);
       res.status(500).send("Error fatal");
