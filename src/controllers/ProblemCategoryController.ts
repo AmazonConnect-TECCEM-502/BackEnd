@@ -7,6 +7,7 @@ class ProblemCategoryController extends AbstractController {
   private static instance: ProblemCategoryController;
 
   private categoryId: number = 1;
+  private solutionId: number = 1;
 
   public static getInstance(): AbstractController {
     if (this.instance) {
@@ -24,9 +25,10 @@ class ProblemCategoryController extends AbstractController {
     );
     this.router.post("/postProblem", this.postProblem.bind(this));
     this.router.get("/getProblem", this.getProblems.bind(this));
+    this.router.post("/postProblemId", this.postProblemId.bind(this));
 
     this.router.get("/getProblemid", this.getProblemid.bind(this));
-    this.router.get("/getSolutions/:ID", this.getSolutions.bind(this));
+    this.router.get("/getSolutions", this.getSolutions.bind(this));
     this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
     this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
     this.router.post("/postCreateProblem", this.postCreateProblem.bind(this));
@@ -44,7 +46,6 @@ class ProblemCategoryController extends AbstractController {
       //   model: db["Problem_category"],
       //   mapToModel: true
       // })
-      console.log("Problemas", problems);
       res.status(200).send(problems);
     } catch (err) {
       if (err instanceof Error) {
@@ -71,7 +72,7 @@ class ProblemCategoryController extends AbstractController {
   private async getProblems(req: Request, res: Response) {
     try {
       let qna = await db.sequelize.query(
-        "SELECT problem_description, category_id FROM `Category-Problem` as cp, Problem as p WHERE cp.problem_id = p.problem_id and cp.category_id = " +
+        "SELECT problem_description, category_id, p.problem_id FROM `Category-Problem` as cp, Problem as p WHERE cp.problem_id = p.problem_id and cp.category_id = " +
           this.categoryId,
         {
           model: db["Category-Problem"],
@@ -102,14 +103,30 @@ class ProblemCategoryController extends AbstractController {
     }
   }
 
+  private async postProblemId(req: Request, res: Response) {
+    try {
+      this.solutionId = req.body.solution_id;
+      console.log("Recibi problem id", req.body.solution_id);
+      
+      res.status(200).send("Recibi problem id");
+    } catch (err) {
+      if (err instanceof Error) {
+        res.status(500).send({ message: err.message });
+      } else {
+        res.status(501).send({ message: "Error externo" });
+      }
+    }
+  }
+
   private async getSolutions(req: Request, res: Response) {
-    const ID = req.params.ID;
+    const ID = this.solutionId;
     try {
       const resultado = await db["Solution"].findAll({
-        attributes: ["solution_description", "solution_id"],
+        attributes: ["solution_description", "problem_id"],
         where: {
-          problem_id: ID,
-        },
+          //approved_date: {not: null},
+          problem_id: ID
+        }
       });
       console.log("Consulta exitosa");
       res.status(200).send(resultado);
