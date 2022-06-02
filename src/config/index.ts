@@ -44,3 +44,5 @@ export const COGNITO_APP_SECRET_HASH = process.env.COGNITO_APP_SECRET_HASH
 export const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID
   ? process.env.COGNITO_USER_POOL_ID
   : "";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
