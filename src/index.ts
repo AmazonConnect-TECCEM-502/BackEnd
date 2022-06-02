@@ -14,6 +14,7 @@ import ProductCategoryController from "./controllers/ProductCategoryController";
 import SettingsUserController from "./controllers/SettingsUserController";
 import AuthenticationController from "./controllers/AuthenticationController";
 import { ProcessCredentials } from "aws-sdk";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const app = new Server({
   port: PORT,
