@@ -10,7 +10,6 @@ import CallController from "./controllers/CallController";
 import VIDUserController from "./controllers/VIDUserController";
 import ProblemCategoryController from "./controllers/ProblemCategoryController";
 import SalesContoller from "./controllers/SalesController";
-import ProductCategoryController from "./controllers/ProductCategoryController";
 import SettingsUserController from "./controllers/SettingsUserController";
 import AuthenticationController from "./controllers/AuthenticationController";
 import { ProcessCredentials } from "aws-sdk";
@@ -26,7 +25,6 @@ const app = new Server({
     VIDUserController.getInstance(),
     ProblemCategoryController.getInstance(),
     SalesContoller.getInstance(),
-    ProductCategoryController.getInstance(),
     SettingsUserController.getInstance(),
     AuthenticationController.getInstance(),
   ],
