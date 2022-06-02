@@ -74,6 +74,7 @@ class UserController extends AbstractController_1.default {
                 res.status(200).json({
                     email: user.email,
                     user_type: user.user_type,
+                    id: user.user_id,
                 });
             }
             else {

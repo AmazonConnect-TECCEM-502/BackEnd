@@ -18,6 +18,7 @@ const SalesController_1 = __importDefault(require("./controllers/SalesController
 const ProductCategoryController_1 = __importDefault(require("./controllers/ProductCategoryController"));
 const SettingsUserController_1 = __importDefault(require("./controllers/SettingsUserController"));
 const AuthenticationController_1 = __importDefault(require("./controllers/AuthenticationController"));
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const app = new Server_1.default({
     port: config_1.PORT,
     portS: config_2.PORTS,

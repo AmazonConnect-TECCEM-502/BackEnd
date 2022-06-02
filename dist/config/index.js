@@ -47,4 +47,5 @@ exports.COGNITO_APP_SECRET_HASH = process.env.COGNITO_APP_SECRET_HASH
 exports.COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID
     ? process.env.COGNITO_USER_POOL_ID
     : "";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 //# sourceMappingURL=index.js.map
