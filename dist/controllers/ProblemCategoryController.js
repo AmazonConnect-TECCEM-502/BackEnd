@@ -172,8 +172,8 @@ class ProblemCategoryController extends AbstractController_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield models_1.default["Solution"].create(req.body);
-                console.log("Registro exitoso");
-                res.status(200).send("Registro exitoso");
+                console.log("New Solution:\n", req.body);
+                res.status(200).send(req.body);
             }
             catch (err) {
                 console.log("Error");

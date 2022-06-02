@@ -75,8 +75,13 @@ class VIDUserController extends AbstractController {
       let userData = await db["Client"].findOne({
         where: { phone: req.body.phoneNumber },
       });
-      console.log("Datos de usuario:", userData);
-      res.status(200).send(userData);
+      
+      const [userProducts, metadata] = await db.sequelize.query(`SELECT Product.product_name FROM Product, capstone.Order, Client WHERE Client.client_id = capstone.Order.client_id AND capstone.Order.product_id = Product.product_id AND Client.client_id = ${userData.client_id}`);
+
+      const data = {userData, userProducts}
+
+      console.log("Datos ", data);
+      res.status(200).send(data);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
