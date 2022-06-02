@@ -35,6 +35,7 @@ class ProblemCategoryController extends AbstractController {
     this.router.get("/getCategories",this.getCategories.bind(this));
     this.router.get("/getProposals/:ID",this.getProposals.bind(this));
     this.router.post("/postApproveProposals/:ID", this.postApproveProposals.bind(this));
+    this.router.delete("/deleteProblem/:ID",this.deleteProblem.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -225,6 +226,22 @@ class ProblemCategoryController extends AbstractController {
       console.log("Consulta exitosa");
       console.log(resultado);
       res.status(200).send(resultado);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
+    }
+  }
+  private async deleteProblem(req: Request, res: Response) {
+    const ID = req.params.ID;
+    try {
+      console.log(req.body);
+      await db["Problem"].destroy({
+        where: {
+          problem_id: ID,
+        },
+      }),
+      console.log("Registro exitoso");
+      res.status(200).send("Registro exitoso");
     } catch (err: any) {
       console.log("Error");
       res.status(500).send("Error fatal:" + err);

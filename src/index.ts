@@ -1,5 +1,6 @@
 import Server from "./providers/Server";
 import { PORT, NODE_ENV } from "./config";
+import { PORTS } from "./config";
 // Importa middlewares
 import express from "express";
 import cors from "cors";
@@ -12,9 +13,11 @@ import SalesContoller from "./controllers/SalesController";
 import ProductCategoryController from "./controllers/ProductCategoryController";
 import SettingsUserController from "./controllers/SettingsUserController";
 import AuthenticationController from "./controllers/AuthenticationController";
+import { ProcessCredentials } from "aws-sdk";
 
 const app = new Server({
   port: PORT,
+  portS: PORTS,
   middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
   controllers: [
     UserController.getInstance(),
