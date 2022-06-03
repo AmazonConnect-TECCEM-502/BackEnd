@@ -36,6 +36,7 @@ class ProblemCategoryController extends AbstractController {
     this.router.get("/getProposals/:ID",this.getProposals.bind(this));
     this.router.post("/postApproveProposals/:ID", this.postApproveProposals.bind(this));
     this.router.delete("/deleteProblem/:ID",this.deleteProblem.bind(this));
+    this.router.post("/postCreateCategory",this.postCreateCategory.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -214,14 +215,15 @@ class ProblemCategoryController extends AbstractController {
   private async postApproveProposals(req: Request, res: Response) {
     const ID = req.params.ID;
     const date = req.body.date;
-    console.log(date)
+    const approved_by = req.body.approved_by;
     try {
       const resultado = await db["Solution"].findOne({
         where:{
-          solution_id : ID
+          solution_id : ID,
         }
       });
-      resultado.approved_date = req.body.date
+      resultado.approved_date = date
+      resultado.approved_by = approved_by
       await resultado.save()
       console.log("Consulta exitosa");
       console.log(resultado);
@@ -247,7 +249,15 @@ class ProblemCategoryController extends AbstractController {
       res.status(500).send("Error fatal:" + err);
     }
   }
-  
+  private async postCreateCategory(req:Request,res:Response){
+    try {
+      await db["Problem_category"].create(req.body);
+      res.status(200).send(req.body);
+    } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
+    }
+  }
 }
 
 export default ProblemCategoryController;
