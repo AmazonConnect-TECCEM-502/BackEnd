@@ -32,7 +32,7 @@ class SalesContoller extends AbstractController {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
@@ -46,7 +46,7 @@ class SalesContoller extends AbstractController {
         res.status(500).send({ message: error.message });
       }
       else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
@@ -65,7 +65,7 @@ class SalesContoller extends AbstractController {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
@@ -80,7 +80,7 @@ class SalesContoller extends AbstractController {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
@@ -102,7 +102,7 @@ class SalesContoller extends AbstractController {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
@@ -124,20 +124,36 @@ class SalesContoller extends AbstractController {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
 
   private async createProduct(req: Request, res: Response) {
     try {
-      console.log(req.body.sku, req.body.name, req.body.description);
-      res.status(200).send('Product create with success');
+      console.log(req.body);
+
+      const product = await db["Product"].findOne({
+        where: { product_sku: req.body.product_sku}
+      });      
+      if (product){
+        res.status(400).send({ message: "A product with this sku already exists"})
+      } else {
+        const new_product = await db["Product"].create({
+          product_sku: req.body.product_sku,
+          product_name: req.body.product_name,
+          product_description: req.body.product_description,
+          price: req.body.price,
+          stock: req.body.stock
+        });
+        const catprod = await db.sequelize.query(`INSERT INTO \`Category-Product\` (product_id, category_id) VALUES (${new_product.product_id}, ${req.body.category});`);
+        res.status(200).send('Product create with success');
+      }
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
-        res.status(501).send({ message: "Error externo" });
+        res.status(501).send({ message: "External error" });
       }
     }
   }
