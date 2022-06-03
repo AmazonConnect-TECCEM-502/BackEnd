@@ -6,9 +6,6 @@ class ProblemCategoryController extends AbstractController {
   // Singleton
   private static instance: ProblemCategoryController;
 
-  private categoryId: number = 1;
-  private solutionId: number = 1;
-
   public static getInstance(): AbstractController {
     if (this.instance) {
       return this.instance;
@@ -60,7 +57,6 @@ class ProblemCategoryController extends AbstractController {
 
   private async postProblem(req: Request, res: Response) {
     try {
-      this.categoryId = req.body.category_id;
       res.status(200).send("Recibi id");
     } catch (err) {
       if (err instanceof Error) {
@@ -107,7 +103,6 @@ class ProblemCategoryController extends AbstractController {
 
   private async postProblemId(req: Request, res: Response) {
     try {
-      this.solutionId = req.body.solution_id;
       console.log("Recibi problem id", req.body.solution_id);
       
       res.status(200).send("Recibi problem id");
@@ -157,7 +152,12 @@ class ProblemCategoryController extends AbstractController {
   }
   private async postCreateSolution(req: Request, res: Response) {
     try {
-      await db["Solution"].create(req.body);
+      await db["Solution"].create({
+        problem_id: req.body.problem_id,
+        solution_description: req.body.solution_description,
+        submitted_id: req.body.submitted_id,
+        approved_by: null
+      });
       console.log("New Solution:\n", req.body);
       res.status(200).send(req.body);
     } catch (err: any) {
