@@ -15,7 +15,11 @@ class UserController extends AbstractController {
 
   // Declaración rutas del controlador
   protected initRoutes(): void {
-    this.router.get("/readUser", this.getReadUser.bind(this));
+    this.router.get(
+      "/readUser",
+      this.authMiddleware.verifyToken,
+      this.getReadUser.bind(this)
+    );
     this.router.get("/readUsers", this.getReadUsers.bind(this));
     this.router.get("/readAgents", this.getReadAgents.bind(this));
     this.router.get(
@@ -28,14 +32,25 @@ class UserController extends AbstractController {
   }
 
   private async getReadUser(req: Request, res: Response) {
-    try {
-      res.status(200).send({ data: "User" });
-    } catch (err) {
-      if (err instanceof Error) {
-        res.status(500).send({ message: err.message });
-      } else {
-        res.status(501).send({ message: "Error externo" });
-      }
+    const user = await db["User"].findOne({
+      where: {
+        cognito_uuid: req.user,
+      },
+    });
+
+    if (user != null) {
+      res.status(200).json({
+        user_id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        user_type: user.user_type,
+        manager_id: user.manager_id,
+      });
+    } else {
+      res.status(401).json({
+        error: "Authentication error",
+      });
     }
   }
 
