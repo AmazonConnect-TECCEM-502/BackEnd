@@ -131,8 +131,6 @@ class SalesContoller extends AbstractController {
 
   private async createProduct(req: Request, res: Response) {
     try {
-      console.log(req.body);
-
       const product = await db["Product"].findOne({
         where: { product_sku: req.body.product_sku}
       });      
