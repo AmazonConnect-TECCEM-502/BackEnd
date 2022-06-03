@@ -21,6 +21,7 @@ class SalesContoller extends AbstractController {
     this.router.get('/getNotOwnedProducts/:client_id/:category_id', this.getProductsNotOwned.bind(this));
     this.router.get('/getRecommendedProducts/:client_id/:category_id', this.getRecommendedProducts.bind(this));
     this.router.post('/buyProduct', this.buyProduct.bind(this));
+    this.router.post('/createProduct', this.createProduct.bind(this));
   }
 
   private async getOwnedProdcuts(req: Request, res: Response) {
@@ -127,6 +128,18 @@ class SalesContoller extends AbstractController {
       }
     }
   }
-}
+
+  private async createProduct(req: Request, res: Response) {
+    try {
+      console.log(req.body.sku, req.body.name, req.body.description);
+      res.status(200).send('Product create with success');
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "Error externo" });
+      }
+    }
+  }
 
 export default SalesContoller;
