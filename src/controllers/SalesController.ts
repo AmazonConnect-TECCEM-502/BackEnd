@@ -141,5 +141,5 @@ class SalesContoller extends AbstractController {
       }
     }
   }
-
+}
 export default SalesContoller;
