@@ -22,8 +22,8 @@ class SettingsUserController extends AbstractController {
   }
 
   protected initRoutes(): void {
-    this.router.post("/changeName", this.postChangeName.bind(this));
-    this.router.post("/userData", this.postUserData.bind(this));
+    this.router.post("/changeName",this.authMiddleware.verifyToken, this.postChangeName.bind(this));
+    this.router.post("/userData",this.authMiddleware.verifyToken, this.postUserData.bind(this));
   }
 
   //Change the first and last name of the user on the data base
