@@ -49,6 +49,9 @@ class AuthenticationController extends AbstractController {
     const manager_id = req.body.manager_id;
     const password = req.body.password;
 
+    console.log(req.body);
+    
+
     try {
       // Create Cognito User
       const user = await this.cognitoService.signUpUser(email, password, [

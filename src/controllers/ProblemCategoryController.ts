@@ -34,6 +34,7 @@ class ProblemCategoryController extends AbstractController {
     this.router.post("/postApproveProposals/:ID", this.postApproveProposals.bind(this));
     this.router.delete("/deleteProblem/:ID",this.deleteProblem.bind(this));
     this.router.post("/postCreateCategory",this.postCreateCategory.bind(this));
+    this.router.get("/getManagers",this.getManagers.bind(this));
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
@@ -88,6 +89,8 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async getProblemid(req: Request, res: Response) {
+   //Get the pk and the description of all the problems. 
+   //To show a list with all the problems on the admin configuration.
     try {
       console.log(req.body);
       const resultado = await db["Problem"].sequelize.query(
@@ -116,6 +119,8 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async getSolutions(req: Request, res: Response) {
+    //Return the pk, description and approved date when it's not Null of the table Solution.
+    //To show only the admins approved solutions to all the agents. 
     const ID = req.params.id;
     try {
       let resultado = await db.sequelize.query(
@@ -135,6 +140,7 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async deleteSolution(req: Request, res: Response) {
+    //Recieve a solutions pk and makes delete of that solution in the Solution table.
     const ID = req.params.ID;
     try {
       console.log(req.body);
@@ -151,12 +157,14 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async postCreateSolution(req: Request, res: Response) {
+    //Create a new solution in the Solution table.
     try {
       await db["Solution"].create({
         problem_id: req.body.problem_id,
         solution_description: req.body.solution_description,
         submitted_id: req.body.submitted_id,
-        approved_by: null
+        approved_by: req.body.approved_by,
+        approved_date: req.body.approved_date
       });
       console.log("New Solution:\n", req.body);
       res.status(200).send(req.body);
@@ -166,6 +174,8 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async postCreateProblem(req:Request,res:Response){
+    //Create a new problem in the Problem Table.
+    //Add the relationship with the category in the Categoruy-problem table.
     try{
         await db["Problem"].create({
           problem_description: req.body.problem_description,
@@ -186,6 +196,8 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async getCategories(req: Request, res: Response) {
+    //Return a list with all the categories in the Category table.
+    //To make a select in the admin configuration for the admin to create a new Problem.
     try {
       const resultado = await db["Problem_category"].findAll();
       console.log("Consulta existosa");
@@ -196,6 +208,8 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async getProposals(req: Request, res: Response) {
+    //Return a list with all the solutions that have null in the approved_date. 
+    //To show the admin the solutions that haven't  been approved.
     const ID = req.params.ID;
     try {
       const resultado = await db["Solution"].findAll({
@@ -213,6 +227,8 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async postApproveProposals(req: Request, res: Response) {
+    //Update the approval _date and approved_by from the table Solution when the admin 
+    //approve a solution.
     const ID = req.params.ID;
     const date = req.body.date;
     const approved_by = req.body.approved_by;
@@ -234,14 +250,21 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async deleteProblem(req: Request, res: Response) {
+    //Recieve the problem_id and delete that problem from the Problem table.
+    //Delete all the solutions that have that problem_id in the Solution table.
     const ID = req.params.ID;
     try {
       console.log(req.body);
+      await db["Solution"].destroy({
+        where:{
+          problem_id: ID
+        }
+      }),
       await db["Problem"].destroy({
         where: {
           problem_id: ID,
-        },
-      }),
+        }
+      })
       console.log("Registro exitoso");
       res.status(200).send("Registro exitoso");
     } catch (err: any) {
@@ -250,10 +273,25 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async postCreateCategory(req:Request,res:Response){
+    //Create a new category in the Problem-category table.
     try {
       await db["Problem_category"].create(req.body);
       res.status(200).send(req.body);
     } catch (err: any) {
+      console.log("Error");
+      res.status(500).send("Error fatal:" + err);
+    }
+  }
+  private async getManagers(req: Request, res:Response){
+    try{
+      const resultado = await db["User"].findAll({
+        attributes: ['first_name', 'last_name', 'user_id'],
+        where:{
+        user_type : "manager"
+        }
+      })
+      res.status(200).send(resultado);
+    }catch(err:any){
       console.log("Error");
       res.status(500).send("Error fatal:" + err);
     }
