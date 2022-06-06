@@ -7,6 +7,7 @@ import {
   AWS_REGION,
   AWS_S3_BUCKET,
 } from "../config";
+import { DateTime } from 'luxon';
 import { callbackify, isUndefined } from "util";
 import { retry } from "async";
 import db from "../models";
@@ -67,11 +68,13 @@ class CallController extends AbstractController {
       // Sequilize  con bd para mandar  los datos con query
       const file = req.body.file;
       console.log("File: " + file);
+      const date = DateTime.now().toISO(); //~> now in the ISO format
       db['Call'].create({
         duration: 10,
         video_url: file,
         transcription_url: "",
-        rating:0
+        rating:0, 
+        created: date //DateTime.now().toLocaleString(DateTime.DATE_FULL)
       })
     res.status(200).json({message: "Se subio a la BD"});
     }

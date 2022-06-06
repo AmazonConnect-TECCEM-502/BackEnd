@@ -24,7 +24,7 @@ class ProblemCategoryController extends AbstractController {
     this.router.get("/getProblem/:id", this.getProblems.bind(this));
     this.router.post("/postProblemId", this.postProblemId.bind(this));
 
-    this.router.get("/getProblemid", this.getProblemid.bind(this));
+    this.router.get("/getProblemid/:ID", this.getProblemid.bind(this));
     this.router.get("/getSolutions/:id", this.getSolutions.bind(this));
     this.router.delete("/deleteSolution/:ID", this.deleteSolution.bind(this));
     this.router.post("/postCreateSolution", this.postCreateSolution.bind(this));
@@ -91,13 +91,27 @@ class ProblemCategoryController extends AbstractController {
   private async getProblemid(req: Request, res: Response) {
    //Get the pk and the description of all the problems. 
    //To show a list with all the problems on the admin configuration.
+   const ID = req.params.ID;
+   const problems_array: any[] = []
     try {
       console.log(req.body);
-      const resultado = await db["Problem"].sequelize.query(
-        "Select problem_id as ID, problem_description as question from Problem"
-      );
+      const problems_id = await db[`Category-Problem`].findAll({
+        attributes: ["problem_id"],
+        where:{
+          category_id: ID
+        }
+      })
+      problems_id.forEach((element:any) => {
+        problems_array.push(element.problem_id)
+      });
+      const result = await db["Problem"].findAll({
+        attributes:["problem_id","problem_description"],
+        where:{
+          problem_id: problems_array
+        }
+      })
       console.log("Consulta exitosa");
-      res.status(200).send(resultado[0]);
+      res.status(200).send(result);
     } catch (err: any) {
       console.log("Error");
       res.status(500).send("Error fatal:" + err);
@@ -107,7 +121,6 @@ class ProblemCategoryController extends AbstractController {
   private async postProblemId(req: Request, res: Response) {
     try {
       console.log("Recibi problem id", req.body.solution_id);
-      
       res.status(200).send("Recibi problem id");
     } catch (err) {
       if (err instanceof Error) {

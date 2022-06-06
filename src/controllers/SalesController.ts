@@ -39,7 +39,7 @@ class SalesContoller extends AbstractController {
 
   private async getProductsNotOwned(req: Request, res: Response) {
     try {
-      const products = await db.sequelize.query(`SELECT p.product_id, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id not in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
+      const products = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id not in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
       res.status(200).send(products[0]);
     } catch (error) {
       if (error instanceof Error) {
@@ -58,7 +58,7 @@ class SalesContoller extends AbstractController {
         res.status(200).send(products[0]);
       }
       else {
-        const products = await db.sequelize.query(`SELECT p.product_id, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id not in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
+        const products = await db.sequelize.query(`SELECT p.product_id, product_sku, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id not in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
         res.status(200).send(products[0]);
       }
     } catch (error) {
@@ -89,14 +89,7 @@ class SalesContoller extends AbstractController {
     try {
       const product = await db["Product"].findOne({
         where: { product_id: req.params.product_id },
-        attributes: [
-          "product_id",
-          "product_name",
-          "product_description",
-          "price",
-          "stock"
-        ],
-      });
+        });
       res.status(200).send(product);
     } catch (error) {
       if (error instanceof Error) {
@@ -133,7 +126,7 @@ class SalesContoller extends AbstractController {
     try {
       const product = await db["Product"].findOne({
         where: { product_sku: req.body.product_sku}
-      });      
+      });
       if (product){
         res.status(400).send({ message: "A product with this sku already exists"})
       } else {
