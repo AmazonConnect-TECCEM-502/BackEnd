@@ -39,6 +39,11 @@ class AuthenticationController extends AbstractController {
       this.handleErrors,
       this.getReadUsers.bind(this)
     );
+    this.router.get(
+      "/verifyToken",
+      this.authMiddleware.verifyToken,
+      this.verifyToken.bind(this)
+    );
   }
 
   private async signup(req: Request, res: Response) {
@@ -50,7 +55,6 @@ class AuthenticationController extends AbstractController {
     const password = req.body.password;
 
     console.log(req.body);
-    
 
     try {
       // Create Cognito User
@@ -113,6 +117,10 @@ class AuthenticationController extends AbstractController {
     } catch (err) {
       res.status(500).send("Error fatal:" + err);
     }
+  }
+
+  private async verifyToken(req: Request, res: Response) {
+    res.status(200).send();
   }
 
   protected validateBody(type: "signup" | "signin" | "verify") {
