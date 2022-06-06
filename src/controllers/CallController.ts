@@ -68,10 +68,10 @@ class CallController extends AbstractController {
       const file = req.body.file;
       console.log("File: " + file);
       db['Call'].create({
-        duration: 10,
         video_url: file,
         transcription_url: "",
-        rating:0
+        rating:0, 
+        created: `NOW()`
       })
     res.status(200).json({message: "Se subio a la BD"});
     }
