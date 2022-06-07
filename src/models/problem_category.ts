@@ -3,6 +3,8 @@ Tabla problem_category No llaves foraneas
 */
 import { Model } from "sequelize";
 
+const fkName = "category_id";
+
 interface ModelAttributes {
   category_id: number;
   category_name: string;
@@ -21,7 +23,12 @@ module.exports = (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       Problem_category.belongsToMany(models.Problem, {
         through: "Category-Problem",
-        foreignKey: "category_id",
+        foreignKey: fkName,
+      });
+
+      Problem_category.belongsToMany(models.Call, {
+        through: "Call-Problem_category",
+        foreignKey: fkName,
       });
     }
   }

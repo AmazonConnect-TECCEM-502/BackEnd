@@ -19,10 +19,6 @@ module.exports = (sequelize: any, DataTypes: any) => {
     //submitted_by -- FK
 
     static associate(models: any) {
-      Problem.belongsToMany(models.Call, {
-        through: "Call-Problem",
-        foreignKey: fkName,
-      });
       Problem.belongsToMany(models.Problem_category, {
         through: "Category-Problem",
         foreignKey: fkName,

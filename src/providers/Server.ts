@@ -1,18 +1,24 @@
 import express, { Request, Response, NextFunction } from "express";
 import AbstractController from "../controllers/AbstractController";
-import https from 'https';
+import https from "https";
 import db from "../models";
-import * as fs from 'fs';
-import * as path from 'path';
-import { readFile, writeFile } from 'fs/promises';
+import * as fs from "fs";
+import * as path from "path";
+import { readFile, writeFile } from "fs/promises";
 
-var privateKey  = fs.readFileSync(path.join(__dirname, './../sslcert/privatekey.pem'), 'utf8');
-var certificate = fs.readFileSync(path.join(__dirname, './../sslcert/server.crt'), 'utf8');
+var privateKey = fs.readFileSync(
+  path.join(__dirname, "./../sslcert/privatekey.pem"),
+  "utf8"
+);
+var certificate = fs.readFileSync(
+  path.join(__dirname, "./../sslcert/server.crt"),
+  "utf8"
+);
 
 var credentials = {
-    key: privateKey,
-    cert: certificate
-    //En caso de que protejan su llave agreguen el atributo passphrase: '<su frase>'
+  key: privateKey,
+  cert: certificate,
+  //En caso de que protejan su llave agreguen el atributo passphrase: '<su frase>'
 };
 
 class Server {
@@ -72,8 +78,7 @@ class Server {
     this.app.listen(this.port, () => {
       console.log(`Server running @'http://localhost:${this.port}'`);
     });
-    this.httpsServer.listen(8443,()=>console.log("Corriendo HTTPS 8443"));
-
+    this.httpsServer.listen(8443, () => console.log("Corriendo HTTPS 8443"));
   }
 }
 

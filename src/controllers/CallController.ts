@@ -7,7 +7,7 @@ import {
   AWS_REGION,
   AWS_S3_BUCKET,
 } from "../config";
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 import { callbackify, isUndefined } from "util";
 import { retry } from "async";
 import db from "../models";
@@ -26,10 +26,13 @@ class CallController extends AbstractController {
   protected initRoutes(): void {
     this.router.get("/getCalls", this.getVideos.bind(this));
     this.router.post("/uploadCall", this.postUploadVideo.bind(this));
-    this.router.post('/postVideoBD', this.postVideo.bind(this));
+    this.router.post(
+      "/postVideoBD",
+      this.authMiddleware.verifyToken,
+      this.postVideo.bind(this)
+    );
+    this.router.post("/updateCall", this.updateCall.bind(this));
   }
-
-
 
   // Get Videos
   private async getVideos(req: Request, res: Response) {
@@ -63,24 +66,24 @@ class CallController extends AbstractController {
   }
 
   // Post  One Video Link with name
-  private async postVideo(req: Request, res: Response){
+  private async postVideo(req: Request, res: Response) {
     try {
       // Sequilize  con bd para mandar  los datos con query
       const file = req.body.file;
+      const agent_id = req.body.agent_id;
       console.log("File: " + file);
       const date = DateTime.now().toISO(); //~> now in the ISO format
-      db['Call'].create({
+      db["Call"].create({
         duration: 10,
         video_url: file,
         transcription_url: "",
-        rating:0, 
-        created: date //DateTime.now().toLocaleString(DateTime.DATE_FULL)
-      })
-    res.status(200).json({message: "Se subio a la BD"});
-    }
-    catch (err: any) {
+        rating: 0,
+        agent_id: agent_id,
+      });
+      res.status(201).json({ message: "Se subio a la BD" });
+    } catch (err: any) {
       res.status(500).json({ error: err.message });
-    }   
+    }
   }
 
   // Upload Video
@@ -112,6 +115,36 @@ class CallController extends AbstractController {
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  }
+
+  private async updateCall(req: Request, res: Response) {
+    const url = req.body.url;
+    const date = new Date();
+    const iso_date = `${date.getFullYear().toString().padStart(4, "0")}-${(
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date
+      .getHours()
+      .toString()
+      .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date
+      .getSeconds()
+      .toString()
+      .padStart(2, "0")}`;
+
+    const call = await db[`Call`].findOne({
+      where: {
+        video_url: url,
+      },
+    });
+
+    if (call === null) {
+      res.status(404).send();
+    } else {
+      call.processed = iso_date;
+      call.save();
+      res.status(200).send();
     }
   }
 }

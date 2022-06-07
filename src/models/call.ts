@@ -12,6 +12,7 @@ interface ModelAttributes {
   video_url: string;
   transcription_url: string;
   rating: number;
+  processed: Date;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
@@ -21,10 +22,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
     video_url!: string;
     transcription_url!: string;
     rating!: number;
+    processed!: Date;
 
     static associate(models: any) {
-      Call.belongsToMany(models.Problem, {
-        through: "Call-Problem",
+      Call.belongsToMany(models.Problem_category, {
+        through: "Call-Problem_category",
         foreignKey: fkName,
       });
 
@@ -59,13 +61,17 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: false,
         defaultValue: 0,
       },
+      processed: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       sequelize,
       modelName: "Call",
       timestamps: true,
-      updatedAt: false,
       createdAt: "created",
+      updatedAt: false,
     }
   );
   return Call;
