@@ -32,6 +32,7 @@ class CallController extends AbstractController {
       "/updateCallTranscriptionRating",
       this.updateCallTranscriptionRating.bind(this)
     );
+    this.router.post("/updateCallDuration", this.updateCallDuration.bind(this));
   }
 
   // Get Videos
@@ -169,6 +170,25 @@ class CallController extends AbstractController {
     } else {
       call.transcription_url = transcription_url;
       call.rating = rating;
+      call.save();
+      res.status(200).send();
+    }
+  }
+
+  private async updateCallDuration(req: Request, res: Response) {
+    const video_url = req.body.video_url;
+    const duration = req.body.duration;
+
+    const call = await db[`Call`].findOne({
+      where: {
+        video_url: video_url,
+      },
+    });
+
+    if (call === null) {
+      res.status(404).send();
+    } else {
+      call.duration = duration;
       call.save();
       res.status(200).send();
     }
