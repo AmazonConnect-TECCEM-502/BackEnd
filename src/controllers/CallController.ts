@@ -7,11 +7,7 @@ import {
   AWS_REGION,
   AWS_S3_BUCKET,
 } from "../config";
-import { DateTime } from "luxon";
-import { callbackify, isUndefined } from "util";
-import { retry } from "async";
 import db from "../models";
-import { Console } from "console";
 
 class CallController extends AbstractController {
   private static instance: CallController;
@@ -32,6 +28,10 @@ class CallController extends AbstractController {
       this.postVideo.bind(this)
     );
     this.router.post("/updateCall", this.updateCall.bind(this));
+    this.router.post(
+      "/updateCallTranscriptionRating",
+      this.updateCallTranscriptionRating.bind(this)
+    );
   }
 
   // Get Videos
@@ -72,7 +72,6 @@ class CallController extends AbstractController {
       const file = req.body.file;
       const agent_id = req.body.agent_id;
       console.log("File: " + file);
-      const date = DateTime.now().toISO(); //~> now in the ISO format
       db["Call"].create({
         duration: 10,
         video_url: file,
@@ -143,6 +142,26 @@ class CallController extends AbstractController {
       res.status(404).send();
     } else {
       call.processed = iso_date;
+      call.save();
+      res.status(200).send();
+    }
+  }
+
+  private async updateCallTranscriptionRating(req: Request, res: Response) {
+    const video_url = req.body.video_url;
+    const transcription_url = req.body.transcription_url;
+    const rating = req.body.rating;
+    const call = await db[`Call`].findOne({
+      where: {
+        video_url: video_url,
+      },
+    });
+
+    if (call === null) {
+      res.status(404).send();
+    } else {
+      call.transcription_url = transcription_url;
+      call.rating = rating;
       call.save();
       res.status(200).send();
     }
