@@ -72,14 +72,21 @@ class CallController extends AbstractController {
       const file = req.body.file;
       const agent_id = req.body.agent_id;
       console.log("File: " + file);
-      db["Call"].create({
-        duration: 10,
-        video_url: file,
-        transcription_url: "",
-        rating: 0,
-        agent_id: agent_id,
-      });
-      res.status(201).json({ message: "Se subio a la BD" });
+      db["Call"]
+        .create({
+          duration: 10,
+          video_url: file,
+          transcription_url: "",
+          rating: 0,
+          agent_id: agent_id,
+        })
+        .then((result: any) => {
+          const call_id = result.dataValues.call_id;
+          res
+            .status(201)
+            .json({ message: "Se subio a la BD", call_id: call_id });
+        })
+        .catch((err: any) => res.status(500).json({ error: err.message }));
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

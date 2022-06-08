@@ -13,6 +13,7 @@ import SalesContoller from "./controllers/SalesController";
 import SettingsUserController from "./controllers/SettingsUserController";
 import AuthenticationController from "./controllers/AuthenticationController";
 import { ProcessCredentials } from "aws-sdk";
+import CallProblemCategoryController from "./controllers/CallProblemCategoryController";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const app = new Server({
@@ -27,6 +28,7 @@ const app = new Server({
     SalesContoller.getInstance(),
     SettingsUserController.getInstance(),
     AuthenticationController.getInstance(),
+    CallProblemCategoryController.getInstance(),
   ],
 
   env: NODE_ENV,
