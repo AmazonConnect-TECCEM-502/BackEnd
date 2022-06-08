@@ -72,6 +72,7 @@ class CallController extends AbstractController {
       // Sequilize  con bd para mandar  los datos con query
       const file = req.body.file;
       const agent_id = req.body.agent_id;
+      const client_id = req.body.client_id;
       console.log("File: " + file);
       db["Call"]
         .create({
@@ -80,6 +81,7 @@ class CallController extends AbstractController {
           transcription_url: "",
           rating: 0,
           agent_id: agent_id,
+          client_id: client_id,
         })
         .then((result: any) => {
           const call_id = result.dataValues.call_id;
