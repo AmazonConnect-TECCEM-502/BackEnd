@@ -8,6 +8,7 @@ import {
   AWS_S3_BUCKET,
 } from "../config";
 import db from "../models";
+import { Op } from "sequelize";
 
 class CallController extends AbstractController {
   private static instance: CallController;
@@ -38,29 +39,31 @@ class CallController extends AbstractController {
   // Get Videos
   private async getVideos(req: Request, res: Response) {
     try {
-      AWS.config.update({
-        accessKeyId: AWS_S3_ACCESS_KEY_ID,
-        secretAccessKey: AWS_S3_SECRET_ACCESS_KEY,
-        region: AWS_REGION,
+      const calls = await db[`Call`].findAll({
+        where: {
+          processed: {
+            [Op.not]: null,
+          },
+          agent_id: {
+            [Op.not]: null,
+          },
+          client_id: {
+            [Op.not]: null,
+          },
+        },
+        attributes: ["video_url", "duration", "rating"],
+        include: [
+          {
+            model: db["User"],
+            attributes: ["first_name", "last_name"],
+          },
+          {
+            model: db["Client"],
+            attributes: ["first_name", "last_name"],
+          },
+        ],
       });
-
-      const { fileName, file } = req.body;
-
-      const params = {
-        Bucket: AWS_S3_BUCKET,
-        Key: fileName,
-        Body: file,
-      };
-
-      const s3 = new AWS.S3();
-      // List of the objects
-      s3.listObjects(params, function (err, data) {
-        if (err) {
-          res.status(500).json({ error: err.message });
-        } else {
-          res.status(200).send(data.Contents);
-        }
-      });
+      res.status(200).json(calls);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
