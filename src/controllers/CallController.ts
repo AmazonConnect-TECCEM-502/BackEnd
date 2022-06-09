@@ -61,6 +61,10 @@ class CallController extends AbstractController {
             model: db["Client"],
             attributes: ["first_name", "last_name"],
           },
+          {
+            model: db["Problem_category"],
+            attributes: ["category_id", "category_name"],
+          },
         ],
       });
       res.status(200).json(calls);
