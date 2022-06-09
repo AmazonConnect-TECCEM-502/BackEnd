@@ -18,8 +18,10 @@ class SalesContoller extends AbstractController {
     this.router.get('/getProductCategories', this.getProductCategories.bind(this));
     this.router.get('/getProduct/:product_id', this.getProduct.bind(this));
     this.router.get('/getOwnedProducts/:client_id/:category_id', this.getOwnedProdcuts.bind(this));
+    this.router.get('/getOwnedProducts/:client_id', this.getAllOwnedProducts.bind(this));
     this.router.get('/getNotOwnedProducts/:client_id/:category_id', this.getProductsNotOwned.bind(this));
     this.router.get('/getRecommendedProducts/:client_id/:category_id', this.getRecommendedProducts.bind(this));
+    this.router.get('/orderHistory/:client_id', this.orderHistory.bind(this));
     this.router.post('/buyProduct', this.buyProduct.bind(this));
     this.router.post('/createProduct', this.createProduct.bind(this));
   }
@@ -28,6 +30,49 @@ class SalesContoller extends AbstractController {
     try {
       const products = await db.sequelize.query(`SELECT p.product_id, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
       res.status(200).send(products[0]);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getAllOwnedProducts(req: Request, res: Response) {
+    try {
+      let products = [];
+      for (var i = 1; i <= 3; i++) {
+        let p = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock 
+        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp 
+        WHERE client_id = ${req.params.client_id} and o.product_id = cp.product_id and cp.category_id = ${i} and p.product_id = cp.product_id
+        ORDER BY purchased_date DESC LIMIT 1;`);
+        products.push(p[0][0]);
+      }
+      for (var i = 4; i <= 6; i++) {
+        let ps = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock 
+        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp 
+        WHERE client_id = ${req.params.client_id} and o.product_id = cp.product_id and cp.category_id = ${i} and p.product_id = cp.product_id;`);
+        await ps[0].forEach((product: any) => {          
+          products.push(product);
+        });
+      }
+      res.status(200).send(products);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async orderHistory(req: Request, res: Response) {
+    try {
+      const orders = await db["Order"].findAll({
+        where: { client_id: req.params.client_id }
+      });
+      res.status(200).send(orders);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
