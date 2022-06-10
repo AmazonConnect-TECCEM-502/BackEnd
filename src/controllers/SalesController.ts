@@ -24,7 +24,7 @@ class SalesContoller extends AbstractController {
     this.router.get('/orderHistory/:client_id', this.orderHistory.bind(this));
     this.router.post('/buyProduct', this.buyProduct.bind(this));
     this.router.post('/createProduct', this.createProduct.bind(this));
-    this.router.get('/validateSku', this.validateSku.bind(this));
+    this.router.get('/validateSku/:product_sku', this.validateSku.bind(this));
     this.router.post('/updateProduct', this.updateProduct.bind(this));
   }
 
@@ -45,17 +45,17 @@ class SalesContoller extends AbstractController {
     try {
       let products = [];
       for (var i = 1; i <= 3; i++) {
-        let p = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock 
-        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp 
+        let p = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock
+        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp
         WHERE client_id = ${req.params.client_id} and o.product_id = cp.product_id and cp.category_id = ${i} and p.product_id = cp.product_id
         ORDER BY purchased_date DESC LIMIT 1;`);
         products.push(p[0][0]);
       }
       for (var i = 4; i <= 6; i++) {
-        let ps = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock 
-        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp 
+        let ps = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock
+        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp
         WHERE client_id = ${req.params.client_id} and o.product_id = cp.product_id and cp.category_id = ${i} and p.product_id = cp.product_id;`);
-        await ps[0].forEach((product: any) => {          
+        await ps[0].forEach((product: any) => {
           products.push(product);
         });
       }
@@ -199,12 +199,14 @@ class SalesContoller extends AbstractController {
   private async validateSku(req: Request, res: Response) {
     try {
       const product = await db["Product"].findOne({
-        where: { product_sku: req.body.product_sku}
+        where: { product_sku: req.params.product_sku}
       });
       if (product) {
         const catprod = await db.sequelize.query(`SELECT category_id FROM \`Category-Product\` WHERE product_id = ${product.product_id};`);
-        res.status(200).send({product: product,
-                              category_id: catprod[0]}
+        res.status(200).send({
+                              product: product,
+                              category: catprod[0][0]
+                            }
                             );
       }
     } catch (error) {
