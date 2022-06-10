@@ -24,6 +24,8 @@ class SalesContoller extends AbstractController {
     this.router.get('/orderHistory/:client_id', this.orderHistory.bind(this));
     this.router.post('/buyProduct', this.buyProduct.bind(this));
     this.router.post('/createProduct', this.createProduct.bind(this));
+    this.router.get('/validateSku', this.validateSku.bind(this));
+    this.router.post('/updateProduct', this.updateProduct.bind(this));
   }
 
   private async getOwnedProdcuts(req: Request, res: Response) {
@@ -192,6 +194,49 @@ class SalesContoller extends AbstractController {
         res.status(501).send({ message: "External error" });
       }
     }
+  }
+
+  private async validateSku(req: Request, res: Response) {
+    try {
+      const product = await db["Product"].findOne({
+        where: { product_sku: req.body.product_sku}
+      });
+      if (product) {
+        const catprod = await db.sequelize.query(`SELECT category_id FROM \`Category-Product\` WHERE product_id = ${product.product_id};`);
+        res.status(200).send({product: product,
+                              category_id: catprod[0]}
+                            );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async updateProduct(req: Request, res: Response) {
+    try {
+      const product = await db["Product"].findOne({
+        where: { product_id: req.body.product_id}
+      });
+      const name = req.body.product_name ? req.body.product_name : product.product_name;
+      const description = req.body.product_description ? req.body.product_description : product.product_description;
+      const price = req.body.price ? req.body.price : product.price;
+      const stock = req.body.stock ? req.body.stock : product.stock;
+      console.log(name, description, price, stock);
+      if (req.body.category_id) {
+        console.log(req.body.category_id);
+      }
+      res.status(200).send("Product updated");
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+  }
   }
 }
 export default SalesContoller;
