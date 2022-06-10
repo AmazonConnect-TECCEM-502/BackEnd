@@ -209,6 +209,9 @@ class SalesContoller extends AbstractController {
                             }
                             );
       }
+      else {
+        res.status(400).send("No product was found with given sku");
+      }
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
@@ -223,13 +226,21 @@ class SalesContoller extends AbstractController {
       const product = await db["Product"].findOne({
         where: { product_id: req.body.product_id}
       });
-      const name = req.body.product_name ? req.body.product_name : product.product_name;
-      const description = req.body.product_description ? req.body.product_description : product.product_description;
-      const price = req.body.price ? req.body.price : product.price;
-      const stock = req.body.stock ? req.body.stock : product.stock;
-      console.log(name, description, price, stock);
+      if (req.body.product_name) {
+        product.product_name = req.body.product_name;
+      }
+      if (req.body.product_description) {
+        product.product_description = req.body.product_description;
+      }
+      if (req.body.price) {
+        product.price = req.body.price;
+      }
+      if (req.body.stock) {
+        product.stock = req.body.stock;
+      }
+      product.save();
       if (req.body.category_id) {
-        console.log(req.body.category_id);
+        const catprod = await db.sequelize.query(`UPDATE \`Category-Product\` SET category_id = ${req.body.category_id} WHERE product_id = ${product.product_id};`);
       }
       res.status(200).send("Product updated");
     } catch (error) {
