@@ -24,6 +24,8 @@ class SalesContoller extends AbstractController {
     this.router.get('/orderHistory/:client_id', this.orderHistory.bind(this));
     this.router.post('/buyProduct', this.buyProduct.bind(this));
     this.router.post('/createProduct', this.createProduct.bind(this));
+    this.router.get('/validateSku/:product_sku', this.validateSku.bind(this));
+    this.router.post('/updateProduct', this.updateProduct.bind(this));
   }
 
   private async getOwnedProdcuts(req: Request, res: Response) {
@@ -43,17 +45,17 @@ class SalesContoller extends AbstractController {
     try {
       let products = [];
       for (var i = 1; i <= 3; i++) {
-        let p = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock 
-        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp 
+        let p = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock
+        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp
         WHERE client_id = ${req.params.client_id} and o.product_id = cp.product_id and cp.category_id = ${i} and p.product_id = cp.product_id
         ORDER BY purchased_date DESC LIMIT 1;`);
         products.push(p[0][0]);
       }
       for (var i = 4; i <= 6; i++) {
-        let ps = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock 
-        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp 
+        let ps = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.price, p.stock
+        FROM Product as p, \`Order\` as o, \`Category-Product\` as cp
         WHERE client_id = ${req.params.client_id} and o.product_id = cp.product_id and cp.category_id = ${i} and p.product_id = cp.product_id;`);
-        await ps[0].forEach((product: any) => {          
+        await ps[0].forEach((product: any) => {
           products.push(product);
         });
       }
@@ -192,6 +194,62 @@ class SalesContoller extends AbstractController {
         res.status(501).send({ message: "External error" });
       }
     }
+  }
+
+  private async validateSku(req: Request, res: Response) {
+    try {
+      const product = await db["Product"].findOne({
+        where: { product_sku: req.params.product_sku}
+      });
+      if (product) {
+        const catprod = await db.sequelize.query(`SELECT category_id FROM \`Category-Product\` WHERE product_id = ${product.product_id};`);
+        res.status(200).send({
+                              product: product,
+                              category: catprod[0][0]
+                            }
+                            );
+      }
+      else {
+        res.status(400).send("No product was found with given sku");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async updateProduct(req: Request, res: Response) {
+    try {
+      const product = await db["Product"].findOne({
+        where: { product_id: req.body.product_id}
+      });
+      if (req.body.product_name) {
+        product.product_name = req.body.product_name;
+      }
+      if (req.body.product_description) {
+        product.product_description = req.body.product_description;
+      }
+      if (req.body.price) {
+        product.price = req.body.price;
+      }
+      if (req.body.stock) {
+        product.stock = req.body.stock;
+      }
+      product.save();
+      if (req.body.category_id) {
+        const catprod = await db.sequelize.query(`UPDATE \`Category-Product\` SET category_id = ${req.body.category_id} WHERE product_id = ${product.product_id};`);
+      }
+      res.status(200).send("Product updated");
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+  }
   }
 }
 export default SalesContoller;
