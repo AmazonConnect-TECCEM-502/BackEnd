@@ -20,7 +20,8 @@ class UserController extends AbstractController {
       this.authMiddleware.verifyToken,
       this.getReadUser.bind(this)
     );
-    this.router.get("/readUsers", this.getReadUsers.bind(this));
+    this.router.get("/agentIds", this.getAgentIds.bind(this));
+    this.router.get("/clientIds", this.getClientsIds.bind(this));
     this.router.get("/readAgents", this.getReadAgents.bind(this));
     this.router.get(
       "/userType",
@@ -54,7 +55,30 @@ class UserController extends AbstractController {
     }
   }
 
-  private async getReadUsers(req: Request, res: Response) {}
+  private async getAgentIds(req: Request, res: Response) {
+    try {
+      const agents = await db["User"].findAll({
+        where: {
+          user_type: "agent",
+        },
+        attributes: ["user_id", "first_name", "last_name"],
+      });
+      res.status(200).json(agents);
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  }
+
+  private async getClientsIds(req: Request, res: Response) {
+    try {
+      const clients = await db["Client"].findAll({
+        attributes: ["client_id", "first_name", "last_name"],
+      });
+      res.status(200).json(clients);
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  }
 
   private async getReadAgents(req: Request, res: Response) {
     try {

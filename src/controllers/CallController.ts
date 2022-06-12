@@ -8,7 +8,7 @@ import {
   AWS_S3_BUCKET,
 } from "../config";
 import db from "../models";
-import { Op } from "sequelize";
+import { Op, where, fn, col } from "sequelize";
 
 class CallController extends AbstractController {
   private static instance: CallController;
@@ -22,6 +22,7 @@ class CallController extends AbstractController {
 
   protected initRoutes(): void {
     this.router.get("/getCalls", this.getVideos.bind(this));
+    this.router.post("/getCalls", this.postFilterVideos.bind(this));
     this.router.post("/uploadCall", this.postUploadVideo.bind(this));
     this.router.post(
       "/postVideoBD",
@@ -51,7 +52,7 @@ class CallController extends AbstractController {
             [Op.not]: null,
           },
         },
-        attributes: ["video_url", "duration", "rating"],
+        attributes: ["video_url", "duration", "rating", "created"],
         include: [
           {
             model: db["User"],
@@ -70,6 +71,175 @@ class CallController extends AbstractController {
       res.status(200).json(calls);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  }
+
+  private async postFilterVideos(req: Request, res: Response) {
+    try {
+      var callFilters: any = {};
+      var conditionsWithDate: any = [];
+      var hasDate = false;
+
+      if (req.body.day) {
+        hasDate = true;
+        conditionsWithDate.push(where(fn("DAY", col("created")), req.body.day));
+      }
+
+      if (req.body.month) {
+        hasDate = true;
+        conditionsWithDate.push(
+          where(fn("MONTH", col("created")), req.body.month)
+        );
+      }
+
+      if (req.body.year) {
+        hasDate = true;
+        conditionsWithDate.push(
+          where(fn("YEAR", col("created")), req.body.year)
+        );
+      }
+
+      if (req.body.agents) {
+        callFilters["agent_id"] = req.body.agents;
+      }
+
+      if (req.body.clients) {
+        callFilters["client_id"] = req.body.clients;
+      }
+
+      if (req.body.ratings) {
+        callFilters["rating"] = req.body.ratings;
+      }
+
+      callFilters["processed"] = { [Op.not]: null };
+
+      if (req.body.categories) {
+        var categoriesFilter: any = {};
+        categoriesFilter["category_id"] = req.body.categories;
+
+        if (hasDate) {
+          conditionsWithDate.push(callFilters);
+          const calls = await db["Call"].findAll({
+            where: {
+              [Op.and]: conditionsWithDate,
+            },
+            attributes: ["video_url", "duration", "rating", "created"],
+            include: [
+              {
+                model: db["User"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  user_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Client"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  client_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Problem_category"],
+                attributes: ["category_id", "category_name"],
+                where: categoriesFilter,
+              },
+            ],
+          });
+
+          res.status(200).json(calls);
+        } else {
+          const calls = await db["Call"].findAll({
+            where: callFilters,
+            attributes: ["video_url", "duration", "rating", "created"],
+            include: [
+              {
+                model: db["User"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  user_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Client"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  client_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Problem_category"],
+                attributes: ["category_id", "category_name"],
+                where: categoriesFilter,
+              },
+            ],
+          });
+
+          res.status(200).json(calls);
+        }
+      } else {
+        if (hasDate) {
+          conditionsWithDate.push(callFilters);
+          const calls = await db["Call"].findAll({
+            where: {
+              [Op.and]: conditionsWithDate,
+            },
+            attributes: ["video_url", "duration", "rating", "created"],
+            include: [
+              {
+                model: db["User"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  user_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Client"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  client_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Problem_category"],
+                attributes: ["category_id", "category_name"],
+                where: categoriesFilter,
+              },
+            ],
+          });
+
+          res.status(200).json(calls);
+        } else {
+          const calls = await db["Call"].findAll({
+            where: callFilters,
+            attributes: ["video_url", "duration", "rating", "created"],
+            include: [
+              {
+                model: db["User"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  user_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Client"],
+                attributes: ["first_name", "last_name"],
+                where: {
+                  client_id: { [Op.not]: null },
+                },
+              },
+              {
+                model: db["Problem_category"],
+                attributes: ["category_id", "category_name"],
+              },
+            ],
+          });
+
+          res.status(200).json(calls);
+        }
+      }
+    } catch (err: any) {
+      res.status(500).json({ error: err });
     }
   }
 
