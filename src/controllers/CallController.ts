@@ -1,12 +1,5 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
-import * as AWS from "aws-sdk";
-import {
-  AWS_S3_ACCESS_KEY_ID,
-  AWS_S3_SECRET_ACCESS_KEY,
-  AWS_REGION,
-  AWS_S3_BUCKET,
-} from "../config";
 import db from "../models";
 import { Op, where, fn, col } from "sequelize";
 
@@ -21,19 +14,32 @@ class CallController extends AbstractController {
   }
 
   protected initRoutes(): void {
+    // returns all the calls stored in the database which have a processed date, a client_id and an agent_id
     this.router.get("/getCalls", this.getVideos.bind(this));
+
+    // returns the calls with the desired filters
     this.router.post("/getCalls", this.postFilterVideos.bind(this));
-    this.router.post("/uploadCall", this.postUploadVideo.bind(this));
+
+    // creates a Call record in the database with the call_id, video_url, client_id, agent_id and created date
     this.router.post(
       "/postVideoBD",
       this.authMiddleware.verifyToken,
       this.postVideo.bind(this)
     );
+
+    // this method is called after a Call is done processing and it updates
+    // all the processed date of the Call
     this.router.post("/updateCall", this.updateCall.bind(this));
+
+    // this method is called after a Call has generated it's transcription and it
+    // updates the transcription_url field
     this.router.post(
       "/updateCallTranscriptionRating",
       this.updateCallTranscriptionRating.bind(this)
     );
+
+    // this method is called after the Call has been successfully subtitled and
+    // it updates the duration of the Call
     this.router.post("/updateCallDuration", this.updateCallDuration.bind(this));
   }
 
@@ -267,38 +273,6 @@ class CallController extends AbstractController {
             .json({ message: "Se subio a la BD", call_id: call_id });
         })
         .catch((err: any) => res.status(500).json({ error: err.message }));
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  }
-
-  // Upload Video
-  private async postUploadVideo(req: Request, res: Response) {
-    try {
-      AWS.config.update({
-        accessKeyId: AWS_S3_ACCESS_KEY_ID,
-        secretAccessKey: AWS_S3_SECRET_ACCESS_KEY,
-        region: AWS_REGION,
-      });
-
-      const fileName = req.body.fileName;
-      const blob = req.body.blob;
-
-      const params = {
-        Bucket: AWS_S3_BUCKET,
-        Key: fileName,
-        Body: blob,
-      };
-
-      const s3 = new AWS.S3();
-
-      s3.putObject(params, function (err: any, data: any) {
-        if (err) {
-          res.status(500).json({ error: err.message });
-        } else {
-          res.status(201).json({ message: data });
-        }
-      });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
