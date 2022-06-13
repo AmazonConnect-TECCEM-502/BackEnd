@@ -100,13 +100,21 @@ class SalesContoller extends AbstractController {
 
   private async getRecommendedProducts(req: Request, res: Response) {
     try {
-      if (Number(req.params.category_id) < 4) {
-        const products = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_sku > all (SELECT product_sku FROM Product WHERE product_id in (SELECT o.product_id FROM \`Order\` as o, \`Category-Product\` as cp WHERE o.client_id = ${req.params.client_id} and cp.product_id = o.product_id and cp.category_id = ${req.params.category_id}))`);
-        res.status(200).send(products[0]);
+      const validClient = await db["Client"].findOne({
+        where: { client_id: req.params.client_id}
+      });
+      if (validClient) {
+        if (Number(req.params.category_id) < 4) {
+          const products = await db.sequelize.query(`SELECT p.product_id, p.product_sku, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_sku > all (SELECT product_sku FROM Product WHERE product_id in (SELECT o.product_id FROM \`Order\` as o, \`Category-Product\` as cp WHERE o.client_id = ${req.params.client_id} and cp.product_id = o.product_id and cp.category_id = ${req.params.category_id}))`);
+          res.status(200).send(products[0]);
+        }
+        else {
+          const products = await db.sequelize.query(`SELECT p.product_id, product_sku, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id not in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
+          res.status(200).send(products[0]);
+        }
       }
       else {
-        const products = await db.sequelize.query(`SELECT p.product_id, product_sku, p.product_name, p.product_description, p.price FROM Product as p, \`Category-Product\` as cp WHERE p.product_id = cp.product_id and cp.category_id = ${req.params.category_id} and p.product_id not in (SELECT product_id FROM \`Order\` WHERE client_id = ${req.params.client_id})`);
-        res.status(200).send(products[0]);
+        res.status(400).send("An invalid client_id was provided. Make sure a client with that ID exists.");
       }
     } catch (error) {
       if (error instanceof Error) {
