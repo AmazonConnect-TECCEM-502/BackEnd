@@ -1,3 +1,8 @@
+/*
+Clase que representa un controlador abstracto, de este controlador
+heredarán todos los controladores
+*/
+
 import { Router } from "express";
 
 //Middlewares
@@ -9,8 +14,8 @@ import PermissionMiddleware from "../middlewares/permission";
 import CognitoService from "../services/cognitoService";
 
 export default abstract class AbstractController {
-  private _router: Router = Router();
-  private _prefix: string;
+  private _router: Router = Router(); // The routes will be contained in this router
+  private _prefix: string; // The prefix that goes after the main backend url when sending a request
 
   protected handleErrors = ValidationErrorMiddleware.handleErrors;
   protected authMiddleware = AuthorizationMiddleware.getInstance();
@@ -29,7 +34,6 @@ export default abstract class AbstractController {
     this._prefix = prefix;
     this.initRoutes();
   }
-  //Inicializar las rutas
+  //Initialize routes
   protected abstract initRoutes(): void;
-  //Validar el cuerpo de la petición
 }

@@ -16,29 +16,40 @@ class AuthenticationController extends AbstractController {
   }
 
   protected initRoutes(): void {
+    // creates a user in cognito and in our database with the specified attributes, it also
+    // sends a verification code to the user's email
     this.router.post(
       "/signup",
       this.validateBody("signup"),
       this.handleErrors,
       this.signup.bind(this)
     );
+
+    // gives the user a session token when he/she inputs his/her email and password
     this.router.post(
       "/signin",
       this.validateBody("signin"),
       this.handleErrors,
       this.signin.bind(this)
     );
+
+    // receives the email that the user registered in the system and the verification code
+    // he/she received
     this.router.post(
       "/verify",
       this.validateBody("verify"),
       this.handleErrors,
       this.verify.bind(this)
     );
+
+    // returns all users from the database (only for testing)
     this.router.get(
       "/readUsers",
       this.handleErrors,
       this.getReadUsers.bind(this)
     );
+
+    // verifies that the user is signed-in in the frontend
     this.router.get(
       "/verifyToken",
       this.authMiddleware.verifyToken,
