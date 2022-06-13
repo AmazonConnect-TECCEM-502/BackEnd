@@ -149,17 +149,30 @@ class SalesContoller extends AbstractController {
 
   private async buyProduct(req: Request, res: Response) {
     try {
-      const product = await db["Product"].findOne({
-        where: { product_id: req.body.product_id}
+      const validClient = await db["Client"].findOne({
+        where: { client_id: req.body.client_id}
       });
-      product.stock = product.stock - 1;
-      product.save();
-      await db["Order"].create({
-        total: product.price,
-        product_id: req.body.product_id,
-        client_id: req.body.client_id
-      });
-      res.status(200).send(`${product.product_name} added to client ${req.body.client_id}`)
+      if (validClient) {
+        const product = await db["Product"].findOne({
+          where: { product_id: req.body.product_id}
+        });
+        if (product) {
+          product.stock = product.stock - 1;
+          product.save();
+          await db["Order"].create({
+            total: product.price,
+            product_id: req.body.product_id,
+            client_id: req.body.client_id
+          });
+          res.status(200).send(`${product.product_name} added to client ${req.body.client_id}`)
+        }
+        else {
+          res.status(400).send("An invalid product_id was provided. Make sure a product with that ID exists.")
+        }
+      }
+      else {
+        res.status(400).send("An invalid client_id was provided. Make sure a client with that ID exists.")
+      }
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
@@ -174,7 +187,7 @@ class SalesContoller extends AbstractController {
       const product = await db["Product"].findOne({
         where: { product_sku: req.body.product_sku}
       });
-      if (product){
+      if (product) {
         res.status(400).send({ message: "A product with this sku already exists"})
       } else {
         const new_product = await db["Product"].create({
