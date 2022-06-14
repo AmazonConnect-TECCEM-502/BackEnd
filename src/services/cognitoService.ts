@@ -9,11 +9,11 @@ import {
 type CognitoAttributes = "email";
 
 class CognitoService {
-  // Conectarse a Cognito
+  // Connect to Cognito
   private config: AWS.CognitoIdentityServiceProvider.ClientConfiguration;
   private cognitoIdentity: AWS.CognitoIdentityServiceProvider;
 
-  // Conectar la aplicación a cognito
+  // Connect our app with cognito
   private clientId = COGNITO_APP_CLIENT_ID;
   private secretHash = COGNITO_APP_SECRET_HASH;
 
@@ -34,7 +34,7 @@ class CognitoService {
     this.cognitoIdentity = new AWS.CognitoIdentityServiceProvider(this.config);
   }
 
-  //Metodo de registro
+  //Register a user
   public async signUpUser(
     email: string,
     password: string,
@@ -50,7 +50,7 @@ class CognitoService {
 
     return await this.cognitoIdentity.signUp(params).promise();
   }
-  //Método de verificación de nuevos usuarios
+  //Verify the code that a user inputs to complete the signup
   public async verifyUser(email: string, code: string) {
     const params = {
       ClientId: this.clientId,
@@ -61,7 +61,7 @@ class CognitoService {
     return await this.cognitoIdentity.confirmSignUp(params).promise();
   }
 
-  //Autenticación de usuarios
+  //User login
   public async signInUser(email: string, password: string) {
     const params = {
       AuthFlow: "USER_PASSWORD_AUTH",
