@@ -137,7 +137,7 @@ class ProblemCategoryController extends AbstractController {
     const ID = req.params.id;
     try {
       let resultado = await db.sequelize.query(
-          `SELECT solution_description, problem_id, approved_date FROM Solution AS Solution WHERE Solution.approved_date IS NOT NULL AND problem_id = ${ID}`,
+          `SELECT solution_description, problem_id, approved_date, solution_id FROM Solution AS Solution WHERE Solution.approved_date IS NOT NULL AND problem_id = ${ID}`,
         {
           model: db["Solution"],
           mapToModel: true,
@@ -153,7 +153,7 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async deleteSolution(req: Request, res: Response) {
-    //Recieve a solutions pk and makes delete of that solution in the Solution table.
+    //Receive a solutions pk and makes delete of that solution in the Solution table.
     const ID = req.params.ID;
     try {
       console.log(req.body);
@@ -241,7 +241,7 @@ class ProblemCategoryController extends AbstractController {
   }
   private async postApproveProposals(req: Request, res: Response) {
     //Update the approval _date and approved_by from the table Solution when the admin 
-    //approve a solution.
+    //approves a solution.
     const ID = req.params.ID;
     const date = req.body.date;
     const approved_by = req.body.approved_by;
@@ -263,7 +263,7 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async deleteProblem(req: Request, res: Response) {
-    //Recieve the problem_id and delete that problem from the Problem table.
+    //Receive the problem_id and delete that problem from the Problem table.
     //Delete all the solutions that have that problem_id in the Solution table.
     const ID = req.params.ID;
     try {
@@ -296,6 +296,7 @@ class ProblemCategoryController extends AbstractController {
     }
   }
   private async getManagers(req: Request, res:Response){
+    //Return a list with all the managers
     try{
       const resultado = await db["User"].findAll({
         attributes: ['first_name', 'last_name', 'user_id'],
