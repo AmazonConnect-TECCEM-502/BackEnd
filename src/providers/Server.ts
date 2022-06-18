@@ -1,3 +1,7 @@
+/*
+Class that represents the entire backend server
+*/
+
 import express, { Request, Response, NextFunction } from "express";
 import AbstractController from "../controllers/AbstractController";
 import https from "https";
@@ -18,7 +22,7 @@ var certificate = fs.readFileSync(
 var credentials = {
   key: privateKey,
   cert: certificate,
-  //En caso de que protejan su llave agreguen el atributo passphrase: '<su frase>'
+  //In case you protect your key add the passphrase attribute: '<your phrase>'.
 };
 
 class Server {
@@ -45,7 +49,7 @@ class Server {
   }
 
   private loadRoutes(controllers: AbstractController[]): void {
-    // Página prueba
+    // Test page
     this.app.get("/", (_: any, res: Response) => {
       res.status(200).send({
         message: "The backend is working",
@@ -54,23 +58,22 @@ class Server {
       });
     });
 
-    // Agregar controladores
+    // Add controllers
     controllers.forEach((controller: AbstractController) => {
       this.app.use(`/${controller.prefix}`, controller.router);
     });
   }
 
-  // Agregar Middleware
+  // Add middlewares
   private loadMiddlewares(middlewares: any[]): void {
     middlewares.forEach((middleware: any) => {
       this.app.use(middleware);
     });
   }
 
-  // Agregar conexion a bd
+  // Add db connection
   private async databases() {
     await db.sequelize.sync();
-    // console.log("Termino ? :S")
   }
 
   public init(): void {

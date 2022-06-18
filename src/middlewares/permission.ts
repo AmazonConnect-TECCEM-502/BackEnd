@@ -1,3 +1,8 @@
+/*
+Here we define how we will check that the user has permission to perform actions
+as administrator and as manager
+*/
+
 import { Response, Request, NextFunction } from "express";
 // Models
 import { UserRoles } from "../models/user";

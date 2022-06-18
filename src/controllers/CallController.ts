@@ -82,10 +82,12 @@ class CallController extends AbstractController {
 
   private async postFilterVideos(req: Request, res: Response) {
     try {
-      var callFilters: any = {};
+      var callFilters: any = {}; // This variable stores all the filters which can be sent in th body
       var conditionsWithDate: any = [];
       var hasDate = false;
 
+      // In this section of the code we check which filters were sent through the request's body
+      // and we add them to the callFilters object
       if (req.body.day) {
         hasDate = true;
         conditionsWithDate.push(where(fn("DAY", col("created")), req.body.day));
@@ -119,10 +121,12 @@ class CallController extends AbstractController {
 
       callFilters["processed"] = { [Op.not]: null };
 
+      // Check if the user is sending categories filters and add them to the object
       if (req.body.categories) {
         var categoriesFilter: any = {};
         categoriesFilter["category_id"] = req.body.categories;
 
+        // Check if date filters were sent in the request
         if (hasDate) {
           conditionsWithDate.push(callFilters);
           const calls = await db["Call"].findAll({
@@ -184,6 +188,7 @@ class CallController extends AbstractController {
           res.status(200).json(calls);
         }
       } else {
+        // If the user did not send categories but sent date
         if (hasDate) {
           conditionsWithDate.push(callFilters);
           const calls = await db["Call"].findAll({
@@ -252,7 +257,7 @@ class CallController extends AbstractController {
   // Post  One Video Link with name
   private async postVideo(req: Request, res: Response) {
     try {
-      // Sequilize  con bd para mandar  los datos con query
+      // Sequilize  with bd to send  the data with query
       const file = req.body.file;
       const agent_id = req.body.agent_id;
       const client_id = req.body.client_id;
@@ -281,6 +286,7 @@ class CallController extends AbstractController {
   private async updateCall(req: Request, res: Response) {
     const url = req.body.url;
     const date = new Date();
+    // Obtain the current date and pass it to the format YYYY-MM-DD HH:MM:SS
     const iso_date = `${date.getFullYear().toString().padStart(4, "0")}-${(
       date.getMonth() + 1
     )

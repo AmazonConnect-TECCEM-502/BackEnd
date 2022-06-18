@@ -1,3 +1,7 @@
+/*
+Controller that contains all the authentication flow (signup, signin, verify)
+*/
+
 import { Request, Response } from "express";
 import { checkSchema } from "express-validator";
 import AbstractController from "./AbstractController";
@@ -97,10 +101,8 @@ class AuthenticationController extends AbstractController {
     const { email, code } = req.body;
     try {
       await this.cognitoService.verifyUser(email, code);
-      //await this.emailService.emailNotificationSingUp( email, email);
       return res.status(200).end();
     } catch (error: any) {
-      //console.log('failed auth controller', error);
       res.status(500).send({ code: error.code, message: error.message }).end();
     }
   }
@@ -110,12 +112,7 @@ class AuthenticationController extends AbstractController {
 
     try {
       const login = await this.cognitoService.signInUser(email, password);
-
-      // const userDB = await UserModel.query(email).usingIndex('EmailIndex').exec().promise()
-      // const userDBResult = userDB[0].Items[0].attrs;
-
       res.status(200).send({ ...login.AuthenticationResult });
-      //.end();
     } catch (error: any) {
       res.status(500).send({ code: error.code, message: error.message });
     }
@@ -134,6 +131,8 @@ class AuthenticationController extends AbstractController {
     res.status(200).send();
   }
 
+  // This function validates that the body sent through the requests complies
+  // with the required formats
   protected validateBody(type: "signup" | "signin" | "verify") {
     switch (type) {
       case "signup":

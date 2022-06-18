@@ -1,3 +1,7 @@
+/*
+Here we define all our environment variables
+*/
+
 export const PORT: number = process.env.PORT ? +process.env.PORT : 8080;
 export const PORTS: number = process.env.PORTS ? +process.env.PORTS : 8443;
 export const NODE_ENV = process.env.NODE_ENV
@@ -45,4 +49,3 @@ export const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID
   ? process.env.COGNITO_USER_POOL_ID
   : "";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-

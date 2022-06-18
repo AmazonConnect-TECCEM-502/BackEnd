@@ -1,3 +1,8 @@
+/*
+Class that uses aws-sdk to use cognito services and make them accesible from
+other clases
+*/
+
 import AWS from "aws-sdk";
 import crypto from "crypto";
 import {

@@ -1,10 +1,14 @@
+/*
+Here we start the server using npm run build-start
+*/
+
 import Server from "./providers/Server";
 import { PORT, NODE_ENV } from "./config";
 import { PORTS } from "./config";
-// Importa middlewares
+// Import middlewares
 import express from "express";
 import cors from "cors";
-// Importa controllers
+// Import controllers
 import UserController from "./controllers/UserController";
 import CallController from "./controllers/CallController";
 import VIDUserController from "./controllers/VIDUserController";

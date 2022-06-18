@@ -1,6 +1,6 @@
 /*
-Clase que representa un controlador abstracto, de este controlador
-heredarán todos los controladores
+Class that represents an abstract controller.
+All controllers will inherit from this class
 */
 
 import { Router } from "express";

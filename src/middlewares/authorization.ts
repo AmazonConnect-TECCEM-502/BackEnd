@@ -1,3 +1,7 @@
+/*
+Class which allow us to verify that the session token of a user is valid
+*/
+
 import { Response, Request, NextFunction } from "express";
 import { COGNITO_USER_POOL_ID, AWS_REGION } from "../config";
 import jwt from "jsonwebtoken";
