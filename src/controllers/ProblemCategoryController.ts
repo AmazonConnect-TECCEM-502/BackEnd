@@ -38,6 +38,7 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async getProblemCategorys(req: Request, res: Response) {
+    //Return a list with all the categories.
     try {
       let problems = await db["Problem_category"].findAll({
         attributes: ["category_name", "category_id"],
@@ -69,6 +70,7 @@ class ProblemCategoryController extends AbstractController {
   }
 
   private async getProblems(req: Request, res: Response) {
+    //Return a list with all the problems
     try {
       let qna = await db.sequelize.query(
         "SELECT problem_description, category_id, p.problem_id FROM `Category-Problem` as cp, Problem as p WHERE cp.problem_id = p.problem_id and cp.category_id = " +
